@@ -16,8 +16,8 @@ class JulesService:
         try:
             from jules_agent_sdk import JulesClient
             self.client = JulesClient(api_key=self.api_key)
-        except Exception:
-            logger.exception("Failed to instantiate SDK")
+        except Exception as e:
+            logger.exception(f"Failed to instantiate SDK: {e}")
             self.client = None
             
     def test_connection(self):
@@ -28,8 +28,8 @@ class JulesService:
             # We should ideally call something here, but for now just returning True
             # to preserve existing (placeholder) logic but with better error handling.
             return True
-        except Exception:
-            logger.exception("Connection test failed")
+        except Exception as e:
+            logger.exception(f"Connection test failed: {e}")
             return False
 
     def create_session(self, prompt: str, source: str, title: str, require_plan_approval: bool):
@@ -47,7 +47,7 @@ class JulesService:
             )
             return session
         except Exception as e:
-            logger.exception("Failed to create session")
+            logger.exception(f"Failed to create session: {e}")
             return {"error": str(e)}
 
     def list_activities(self, session_id: str):
@@ -56,8 +56,8 @@ class JulesService:
              return []
         try:
             return self.client.activities.list_all(session_id)
-        except Exception:
-            logger.exception("Failed to list activities")
+        except Exception as e:
+            logger.exception(f"Failed to list activities: {e}")
             return []
             
     def approve_plan(self, session_id: str):
@@ -66,8 +66,8 @@ class JulesService:
         try:
              self.client.sessions.approve_plan(session_id)
              return True
-        except Exception:
-             logger.exception("Failed to approve plan")
+        except Exception as e:
+             logger.exception(f"Failed to approve plan: {e}")
              return False
 
 # In a real app we'd load this from an env variable or DB.
