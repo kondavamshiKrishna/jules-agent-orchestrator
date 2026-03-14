@@ -89,11 +89,10 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
         # 4. Poll for activities and completion
         final_output = ""
         while True:
+            # Re-fetch from DB if we need robust resume/kill checking.
+            # For now, just poll Jules
             activities = await asyncio.to_thread(client.list_activities, session_id)
             # Find the most recent activity that marks completion or output
-            # In Jules, completion often means the agent has stopped writing or specific metadata.
-            # For this MVP, we look for 'COMPLETED' status or final message.
-            # Real SDK might have a 'wait_for_completion' or activity status 'AGENT_PROCESS_DONE'
             
             # Simple polling logic:
             if activities:
