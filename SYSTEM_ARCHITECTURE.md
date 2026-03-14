@@ -4,18 +4,18 @@
 
 ---
 
-## 🏛️ Executive Architecture Overview
+## 🏛️ 100% Target Architecture Overview
 
-The Jules Agent Orchestrator (JAO) is a **Cybernetic Firm Infrastructure**. It is not a single application, but an ecosystem designed to manage multiple AI agent sessions simultaneously, maintain persistent technical memory, and execute complex software engineering tasks autonomously.
+The Jules Agent Orchestrator (JAO) is a **Cybernetic Firm Infrastructure**. This document serves as the **Target Blueprint**. If the current codebase (50%) does not match this blueprint, it is considered "Feature Pending." The system is designed to grow into this exact structure.
 
-### 🛠️ Core Technology Stack
+### 🛠️ Core Technology Stack (Final Specification)
 | Layer | Technology | Role |
 | :--- | :--- | :--- |
-| **Frontend** | React 18, Vite, Lucide | Real-time monitoring of agent activity and sessions. |
-| **Backend** | FastAPI (Python 3.11) | State machine, orchestration logic, and API gateway. |
-| **Orchestrator** | Regex-based Transition Engine | Parses handovers and automates agent rotations. |
-| **Database** | TimescaleDB (PostgreSQL) | High-performance storage for activity logs and long-term memory. |
-| **AI Engine** | Jules SDK | Dedicated compute per agent session (Jules VM). |
+| **Frontend** | React 18, Vite, Lucide | Real-time monitoring of agent activity, session health, and P&L. |
+| **Backend** | FastAPI (Python 3.11) | Autonomous State Machine, Orchestrator Engine, and API Gateway. |
+| **Orchestration** | Recursive Transition Engine | Automated agent rotation, task assignment, and conflict resolution. |
+| **Database** | TimescaleDB (PostgreSQL) | High-fidelity store for activity logs, persistent memory, and audit trails. |
+| **AI Engine** | Jules SDK/API | Dedicated, high-performance compute per agent session with full VM access. |
 
 ---
 
@@ -29,17 +29,18 @@ The `OrchestratorEngine` (in `services/orchestrator.py`) is the "brain" that mon
 - It extracts the **Context Payload** (the prompt for the next agent).
 - It initiates a "Context Transfer" where the results of the previous work are passed to the next specialist.
 
-### 2. Session Lifecycle & Resource Control
-- **Limit Management**: The system tracks active UUIDs. If the user sets a limit (e.g., 5 agents), the Orchestrator will queue new tasks until a slot opens up.
-- **Teardown**: When an agent signals `Done ✅`, the backend triggers a cleanup function that:
-    1. Archives the activity logs to TimescaleDB.
-    2. Closes the Jules VM session.
-    3. Notifies the Frontend to remove the agent from the "Active Field."
+### 2. Session Lifecycle & Dynamic Scaling (100% Scope)
+- **Simultaneous Session Control**: The Orchestrator tracks a `MAX_AGENTS` constant. If the limit is 5, and 10 tasks are queued, the system maintains a "Waiting Room" in the database.
+- **Autonomous Teardown**: As soon as an agent emits a `Done ✅` signal, the Orchestrator immediately:
+    1. Synchronizes the VM filesystem with the main repository.
+    2. Flushes the ephemeral session memory to the **Global Context Store** in TimescaleDB.
+    3. Terminates the Jules VM to reclaim credits/resources.
+    4. Automatically spawns the next agent from the queue.
 
-### 3. "The Fielding" (Dynamic Role Assignment)
-We use a **Spare Parts Model** for agents. 
-- **Active Fielders**: The 5-6 core agents (@pydan, @rita, etc.) who are usually active during construction.
-- **On-Demand Subs**: Auditing agents (like `@scalper_auditor`) are kept in the `audit_agents/` folder. They are only "called to the field" when the Architect (@ada) identifies a specific bug or weakness in a module.
+### 3. "The Fielding" & Spare Parts System
+We use a **Dynamic Fielder Model**. Agents are treated as interchangeable parts based on their specialization.
+-**Initialization Scan**: Before any task, `@onboard` performs a "Ground Check" to verify all agents are mapped to the correct project paths. 
+-**Specialized Deployment**: Auditing agents (like `@scalper_auditor`) are "Bench Players." They are only moved to the "Active Field" when a specific module failure is detected.
 
 ---
 
@@ -82,9 +83,12 @@ The system is designed to be **Zero-Config Portable**.
 
 ---
 
-## 🛡️ Future Evolution: The Self-Healing Firm
-When a task is complete, the **System Architect (@ada)** is re-assigned to audit the final state. 
-- If `@ada` finds no issues, she assigns the **System Auditor (@omega)**.
-- If `@omega` also finds nothing, the system flags the project as **STABLE** and asks the user for the next "Epic" or "Feature Request." 
+## 🚀 The Self-Healing Autonomous Loop
+In the final 100% version, the system operates in a **Self-Correction Cycle**:
+1. **Construction**: `@pydan` or `@rita` build a feature.
+2. **First Audit**: The System Architect (`@ada`) reviews the changes against the blueprints.
+3. **Deep Audit**: If `@ada` flags a module, the **specialized Auditor** for that module (e.g., `@api_auditor`) is triggered.
+4. **Final Sign-off**: The System Auditor (`@omega`) performs a macro-sweep.
+5. **Human Checkpoint**: Only when all agents agree the system is 100% bug-free does the Orchestrator return to the user and say: *"System is stable. Awaiting next objectives."*
 
-This ensures that the "Firm" never stops until perfection is achieved.
+If any agent finds a mistake, the loop jumps back to Step 1 automatically. This ensures the code always converges toward the Blueprint.

@@ -6,14 +6,14 @@
 
 ---
 
-## 🌌 The Vision
-JAO is a dynamic, self-organizing ecosystem of **29+ specialized AI agents**. Unlike simple coding assistants, JAO operates as a cohesive firm where agents plan, build, audit, and verify each other's work with zero human intervention.
+## 🌌 The Vision: 100% Autonomous Engineering
+JAO is not a tool; it is a **Self-Healing AI Firm**. The project goal is 100% autonomy where a single user objective triggers a multi-agent cascade that plans, builds, audits, and self-corrects until the objective is achieved perfectly.
 
-## 🚀 Key Features
-- **🏗️ Self-Assigning Workflow**: Agents detect when a task is ready for the next specialist and hand it over automatically.
-- **🔍 Spare-Parts Auditing**: specialized auditors for Risk, Scalping, and Backend are triggered only when needed.
-- **🔄 Zero-Config Portability**: Use `@onboard` to migrate the entire firm to any new project directory in seconds.
-- **📈 Real-time Monitoring**: A dedicated React dashboard to watch your AI team work in real-time.
+## 🚀 100% Feature Roadmap
+- **🏗️ Recursive Orchestration**: Agents automatically hand over tasks and transfer persistent technical context.
+- **🛡️ Self-Healing Loop**: Continuous auditing cycles that refuse to stop until the code matches the architecture blueprints.
+- **🏢 Dynamic Firm Scaling**: Support for up to 15+ simultaneous agent sessions with automated resource management.
+- **🔄 Universal Portability**: The `@onboard` Captain ensures the entire team can move grounds (projects) instantly.
 
 ## 🛠️ Technology Stack
 - **Engine**: FastAPI, Jules SDK, Python 3.11
