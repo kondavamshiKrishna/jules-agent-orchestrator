@@ -2,17 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import workflows, agents
 from contextlib import asynccontextmanager
-from app.database import init_db_pool, close_db_pool
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from database.init_db import init_db
+from app.database import init_db_pool, close_db_pool, init_db_schema
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup
     await init_db_pool()
-    await init_db()
+    await init_db_schema()
     yield
     # Shutdown
     await close_db_pool()

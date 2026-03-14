@@ -7,6 +7,7 @@ from typing import List
 router = APIRouter()
 
 # Assuming the backend is inside JAO/backend, the agents are two levels up
+<<<<<<< HEAD
 
 AGENTS_DIR = os.getenv("AGENTS_DIR")
 if not AGENTS_DIR:
@@ -17,6 +18,9 @@ if not AGENTS_DIR:
         # Fallback to local path
         AGENTS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
 
+=======
+AGENTS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../"))
+>>>>>>> origin/main
 AUDIT_AGENTS_DIR = os.path.join(AGENTS_DIR, "audit_agents")
 
 @router.get("/", response_model=List[AgentPersona])
