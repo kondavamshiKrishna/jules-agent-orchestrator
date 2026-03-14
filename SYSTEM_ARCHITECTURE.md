@@ -8,14 +8,14 @@
 
 The Jules Agent Orchestrator (JAO) is a **Cybernetic Firm Infrastructure**. This document serves as the **Target Blueprint**. If the current codebase (50%) does not match this blueprint, it is considered "Feature Pending." The system is designed to grow into this exact structure.
 
-### 🛠️ Core Technology Stack (Final Specification)
+### 🛠️ Core Technology Stack (100% Production Spec)
 | Layer | Technology | Role |
 | :--- | :--- | :--- |
-| **Frontend** | React 18, Vite, Lucide | Real-time monitoring of agent activity, session health, and P&L. |
-| **Backend** | FastAPI (Python 3.11) | Autonomous State Machine, Orchestrator Engine, and API Gateway. |
-| **Orchestration** | Recursive Transition Engine | Automated agent rotation, task assignment, and conflict resolution. |
-| **Database** | TimescaleDB (PostgreSQL) | High-fidelity store for activity logs, persistent memory, and audit trails. |
-| **AI Engine** | Jules SDK/API | Dedicated, high-performance compute per agent session with full VM access. |
+| **Frontend** | React 18, Vite, Lucide | **Pro Dashboard**: Management of API keys, Repo selection, and Agent Status switches. |
+| **Backend** | FastAPI (Python 3.11) | **Autonomous Hub**: Processes signals, manages DB state, and handles Jules API transactions. |
+| **Orchestration** | Signal-Driven State Machine | Parses terminal outputs for `[NEXT_AGENT]` and `[TASK_DONE]` signals. |
+| **Database** | TimescaleDB | **Source of Truth**: Stores Prompts, Skills, Activity logs, and Session history. |
+| **AI Engine** | Jules SDK | **Compute Layer**: Isolated VMs for each agent session. |
 
 ---
 
@@ -83,12 +83,28 @@ The system is designed to be **Zero-Config Portable**.
 
 ---
 
+## 🗄️ Section 4: The Agent Skills Registry (Database Table)
+
+In version 1.0.0, agents are no longer just files. They are stored in the `agents` table:
+```sql
+CREATE TABLE agents (
+    agent_id TEXT PRIMARY KEY,
+    persona_prompt TEXT,       -- The detailed instructions for Jules
+    skills TEXT[],             -- e.g. ['python', 'react', 'auditing']
+    status TEXT DEFAULT 'ACTIVE', -- ACTIVE/INACTIVE toggle
+    priority INTEGER DEFAULT 1,
+    assigned_vms INTEGER DEFAULT 0
+);
+```
+- **Activation Switch**: Users can deactivate any agent from the UI. The Orchestrator will skip deactivated agents during the rotation.
+- **Skill-Based Assignment**: If Agent A gives work that requires "Auditing," the Orchestrator queries the DB for agents with the `auditing` skill and reasonable `priority`.
+
+---
+
 ## 🚀 The Self-Healing Autonomous Loop
 In the final 100% version, the system operates in a **Self-Correction Cycle**:
-1. **Construction**: `@pydan` or `@rita` build a feature.
-2. **First Audit**: The System Architect (`@ada`) reviews the changes against the blueprints.
-3. **Deep Audit**: If `@ada` flags a module, the **specialized Auditor** for that module (e.g., `@api_auditor`) is triggered.
-4. **Final Sign-off**: The System Auditor (`@omega`) performs a macro-sweep.
-5. **Human Checkpoint**: Only when all agents agree the system is 100% bug-free does the Orchestrator return to the user and say: *"System is stable. Awaiting next objectives."*
-
-If any agent finds a mistake, the loop jumps back to Step 1 automatically. This ensures the code always converges toward the Blueprint.
+1. **Construction**: Construction agents build the feature.
+2. **First Audit**: The System Architect reviews the changes.
+3. **Deep Audit**: If weaknesses are detected, the **specialized Auditor** with the matching "Skill" is spawned.
+4. **Final Sign-off**: The System Auditor performs a macro-sweep.
+5. **Success Threshold**: Only when both Architect and Auditor find **Zero Bugs** for 2 consecutive cycles is the user notified of completion.

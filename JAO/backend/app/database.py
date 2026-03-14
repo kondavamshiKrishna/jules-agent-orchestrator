@@ -10,6 +10,19 @@ async def init_db_pool():
     db_pool = await asyncpg.create_pool(
         dsn="postgresql://jao_user:jao_pass@timescale:5432/jao"
     )
+    
+    # Ensure tables exist
+    async with db_pool.acquire() as conn:
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS workflow_runs (
+                run_id UUID PRIMARY KEY,
+                status TEXT,
+                current_agent TEXT,
+                task TEXT,
+                history JSONB,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
 
 
 async def init_db_schema():
