@@ -68,6 +68,8 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
     # Loop variables
     current_agent = request.starting_agent
     current_prompt = f"USER TASK: {request.task}"
+    retry_count = 0
+    MAX_RETRIES = 2
     
     while current_agent:
         async with pool.acquire() as conn:
@@ -88,7 +90,24 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
         except Exception as e:
             persona_content = f"Error loading persona: {e}"
             
-        full_prompt = f"IDENTITY:\n{persona_content}\n\nTASK:\n{current_prompt}"
+        # In multi-agent systems, agents MUST know what happened before.
+        # We need to inject the context/history of the previous steps
+        # otherwise they lose track of the assignment context.
+        previous_history = ""
+        async with pool.acquire() as conn:
+            record = await conn.fetchrow("SELECT history FROM workflow_runs WHERE run_id = $1::uuid", run_id)
+            if record and record["history"]:
+                try:
+                    hist_arr = json.loads(record["history"]) if isinstance(record["history"], str) else record["history"]
+                    if isinstance(hist_arr, str): hist_arr = json.loads(hist_arr)
+                    if hist_arr:
+                        # Grab the last output to provide context
+                        last_output = hist_arr[-1].get("output", "")
+                        previous_history = f"\n\nPREVIOUS STEP CONTEXT:\n{last_output}\n"
+                except Exception:
+                    pass
+
+        full_prompt = f"IDENTITY:\n{persona_content}\n\nTASK:\n{current_prompt}{previous_history}"
         
         # 2. Create the session
         session = client.create_session(
@@ -123,7 +142,14 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
                 if text_activities:
                     final_output = text_activities[-1].get("text", "")
             
-            is_done = any(a.get("status") == "completed" for a in activities)
+            # Robust completion check:
+            # In a real SDK, we'd check `client.sessions.get(session_id).status == 'COMPLETED'`
+            # Or look for an explicit end marker.
+            # For this alpha mock, checking if the session activity list explicitly marks 'completed' status.
+            is_done = any(a.get("status") in ["completed", "failed", "error"] for a in activities)
+
+            # Additional heuristic: If no new activities for a long time and last was text.
+            # (In reality, we'd rely on the SDK's explicit state).
             if is_done:
                 break
                 
@@ -153,14 +179,28 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
         # 5. Parse for the next agent
         next_step = OrchestratorEngine.parse_handover(final_output)
         
-        if next_step:
+        if next_step and next_step.get("status") == "STALLED_NO_HANDOVER":
+             if retry_count < MAX_RETRIES:
+                 retry_count += 1
+                 current_prompt = "ERROR: You failed to provide the correct handover formatting. Please resend your output and explicitly assign the next step using the required format (e.g. 'Assigned to: @tag' or 'How to Verify (for @tina):' or 'TASK COMPLETE')."
+                 # Keep current_agent the same so they retry
+             else:
+                 async with pool.acquire() as conn:
+                    await conn.execute(
+                        "UPDATE workflow_runs SET status = $1, current_agent = NULL WHERE run_id = $2::uuid",
+                        "ERROR: STALLED_NO_HANDOVER_LIMIT_REACHED", run_id
+                    )
+                 break
+        elif next_step and next_step.get("next_agent"):
+            retry_count = 0 # reset on successful handoff
             current_agent = next_step["next_agent"]
             current_prompt = next_step["prompt"]
             request.interactive = (next_step["mode"] == "Interactive Plan")
         else:
+            status = next_step.get("status", "COMPLETED") if next_step else "COMPLETED"
             async with pool.acquire() as conn:
                 await conn.execute(
                     "UPDATE workflow_runs SET status = $1, current_agent = NULL WHERE run_id = $2::uuid",
-                    "COMPLETED", run_id
+                    status, run_id
                 )
             break
