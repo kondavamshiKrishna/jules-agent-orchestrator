@@ -42,6 +42,7 @@
 
 
 | 12 | 👑 **Omega Auditor** | `@omega` | 💬 Interactive Plan | **RUN THIS FOR PROJECT HEALTH.** A macro-auditor acting as CTO. Reads the whole codebase to find architectural flaws, security risks, memory leaks, and strategic opportunities. Delivers a CEO-level Executive Report. | None — reads only |
+| 13 | 🔄 **@onboard Syncer** | `@onboard` | 💬 Interactive Plan | **USE THIS FOR NEW PROJECTS.** He scans the new project's folders and automatically updates the "References" in all other 14+ agent files so they are perfectly synchronized with the new code structure. | Updates ALL `.md` files |
 
 ---
 
@@ -72,6 +73,7 @@
 - **Py-Dan** — All Python/FastAPI backend code *(most critical)*
 - **React-Rita** — All React/JSX/CSS frontend code
 - **Ops-Oliver** — Docker, DB schema, deployment infrastructure
+- **@onboard** — Project Portability, Path Synchronization, and Auditor Re-purposing
 
 ### ✅ Quality Gate
 - **Test-Tina** — Tests everything, signs off deployment
@@ -109,6 +111,9 @@ What do you want to do?
 │
 ├── "Are our signals actually profitable / correct?"
 │        └──▶ @crossx directly (read-only audit, no coding needed)
+│
+├── "I am moving these agents to a COMPLETELY NEW project"
+│        └──▶ START with @onboard → scans new folder → updates all agents → @omega audits new project
 │
 └── "What's the priority? What should we build next?"
          └──▶ @ada directly (she manages the backlog)
@@ -157,6 +162,8 @@ User: "Add a notes column to paper trades"
                               └─▶ @tina → Test all 3 layers → Done ✅
 ```
 
+```
+
 ## Workflow 5: Financial Audit
 ```
 User: "Are our BUY signals actually profitable?"
@@ -164,6 +171,15 @@ User: "Are our BUY signals actually profitable?"
       └─▶ @crossx   → Win rate, avg P&L, drawdown analysis
             └─▶ If good: Done ✅
             └─▶ If bad: @ada reviews → @pydan fixes scoring algorithm
+```
+
+## Workflow 6: Project Portability (Switching to a new project)
+```
+User: "We are starting a new E-commerce project in this folder."
+ └─▶ @onboard   → Scans new folder structure (detects Node.js + MongoDB)
+      └─▶ @onboard   → Updates "Reference Paths" in all 14 personas
+            └─▶ @onboard   → Recommends renaming/re-purposing Trading Auditors
+                  └─▶ @omega     → Performs initial CTO audit of the new project ✅
 ```
 
 ---
@@ -208,6 +224,7 @@ jewels_agents/
 ├── react_rita_frontend.md   ← React/CSS developer
 ├── ops_oliver_devops.md     ← Docker/DB/Deployment
 ├── test_tina_qa.md          ← Testing and sign-off
+├── syncer_onboard.md       ← Project Portability & Path Syncer
 ├── crossx_data_analyst.md   ← Financial algorithm audit
 └── audit_agents/            ← Module-specific read-only auditors
 ```
