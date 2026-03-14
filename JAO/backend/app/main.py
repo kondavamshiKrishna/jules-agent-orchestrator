@@ -29,5 +29,5 @@ app.include_router(workflows.router, prefix="/api/v1/workflows", tags=["Workflow
 app.include_router(agents.router, prefix="/api/v1/agents", tags=["Agents"])
 
 @app.get("/health")
-def health_check():
+async def health_check():
     return {"status": "healthy"}
