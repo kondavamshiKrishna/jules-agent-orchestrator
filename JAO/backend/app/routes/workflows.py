@@ -1,3 +1,4 @@
+import time
 from fastapi import APIRouter
 from pydantic import BaseModel
 import uuid
@@ -113,10 +114,21 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
             
         # 4. Poll for activities and completion
         final_output = ""
+        start_time = time.time()
+        timeout_seconds = 300 # 5 minutes timeout
+
         while True:
             # Re-fetch from DB if we need robust resume/kill checking.
             # For now, just poll Jules
-            activities = client.list_activities(session_id)
+            try:
+                activities = client.list_activities(session_id)
+            except Exception as e:
+                async with pool.acquire() as conn:
+                    await conn.execute(
+                        "UPDATE workflow_runs SET status = $1 WHERE run_id = $2::uuid",
+                        f"ERROR: {str(e)}", run_id
+                    )
+                return # Break out of engine loop completely
             
             if activities:
                 text_activities = [a for a in activities if a.get("type") == "message" and a.get("role") == "assistant"]
@@ -126,6 +138,14 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
             is_done = any(a.get("status") == "completed" for a in activities)
             if is_done:
                 break
+
+            if time.time() - start_time > timeout_seconds:
+                async with pool.acquire() as conn:
+                    await conn.execute(
+                        "UPDATE workflow_runs SET status = $1 WHERE run_id = $2::uuid",
+                        "ERROR: Workflow timed out waiting for agent completion.", run_id
+                    )
+                return # Break out of engine loop completely
                 
             await asyncio.sleep(5)
             

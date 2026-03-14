@@ -1,3 +1,4 @@
+import os
 import asyncpg
 import json
 from decimal import Decimal
@@ -8,7 +9,7 @@ async def init_db_pool():
     global db_pool
     # Real app would use env vars for DSN
     db_pool = await asyncpg.create_pool(
-        dsn="postgresql://jao_user:jao_pass@timescale:5432/jao"
+        dsn=os.getenv("DATABASE_URL", "postgresql://jao_user:jao_pass@timescale:5432/jao")
     )
 
 async def close_db_pool():
