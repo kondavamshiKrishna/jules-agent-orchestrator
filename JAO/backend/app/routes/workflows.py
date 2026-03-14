@@ -60,6 +60,13 @@ async def get_workflow_status(run_id: str):
              state["history"] = json.loads(state["history"])
         return json_safe(state)
 
+def _get_persona_content(agent: str) -> str:
+    path = os.path.join(AGENTS_DIR, f"{agent}.md")
+    if not os.path.exists(path):
+        path = os.path.join(AGENTS_DIR, "audit_agents", f"{agent}.md")
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
 async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
     """The infinite loop described in the architecture plan"""
     client = get_jules_client()
@@ -78,13 +85,7 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
         
         # 1. Load the persona from the .md file
         try:
-            persona_path = os.path.join(AGENTS_DIR, f"{current_agent}.md")
-            if not os.path.exists(persona_path):
-                # Check audit_agents folder
-                persona_path = os.path.join(AGENTS_DIR, "audit_agents", f"{current_agent}.md")
-            
-            with open(persona_path, "r", encoding="utf-8") as f:
-                persona_content = f.read()
+            persona_content = await asyncio.to_thread(_get_persona_content, current_agent)
         except Exception as e:
             persona_content = f"Error loading persona: {e}"
             
