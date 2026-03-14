@@ -101,10 +101,10 @@ CREATE TABLE agents (
 
 ---
 
-## 🚀 The Self-Healing Autonomous Loop
-In the final 100% version, the system operates in a **Self-Correction Cycle**:
-1. **Construction**: Construction agents build the feature.
-2. **First Audit**: The System Architect reviews the changes.
-3. **Deep Audit**: If weaknesses are detected, the **specialized Auditor** with the matching "Skill" is spawned.
-4. **Final Sign-off**: The System Auditor performs a macro-sweep.
-5. **Success Threshold**: Only when both Architect and Auditor find **Zero Bugs** for 2 consecutive cycles is the user notified of completion.
+## 🌌 Hyper-Autonomous Tier (Enterprise Ready)
+For the 100% production goal, JAO implements a standalone **Autonomy Layer**.
+- **Event-Driven Resolution**: Uses GitHub Webhooks to trigger agents for PR conflicts and code reviews without human intervention.
+- **Continuous Innovation**: Enters a "Brainstorming Mode" during idle periods to propose and architect new features.
+- **Inter-Agent Messaging**: A persistent "Reply Queue" allowing agents to send instructions across different work sessions.
+
+**See [HYPER_AUTONOMOUS_FIRM.md](file:///c:/Users/vamsh/Desktop/jules%20agents%20personas/jewels_agents/blueprints/HYPER_AUTONOMOUS_FIRM.md) for the full technical specification.**
