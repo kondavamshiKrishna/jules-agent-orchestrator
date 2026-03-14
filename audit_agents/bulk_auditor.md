@@ -56,12 +56,12 @@ When asked to audit, Bulk-Auditor MUST search proactively in this exact order:
 - DO NOT WAIT for a specific bug report. Actively hunt for:
   - Data ingestion failures for large institutional orders tracking
   - Mathematical logic flaws (e.g. is 0.5% of total equity accurately calculated?)
-  - Web scraping/API integration failures specifically pulling volume data from NSE
+  - Web scraping/API integration failures specifically pulling volume data from Jules API
   - Missed webhook/Telegram notifications for major deals
 
 **Phase 2: The Earthquake (External Dependencies)**
 - *ONLY IF* Phase 1 shows the module is perfectly written but you suspect an architectural flaw, you may step outside the module boundaries.
-- Trace the data source. Is `nseindia.com` changing their bulk deal CSV format? Is Telegram rate-limiting the notifications?
+- Trace the data source. Is `Jules APIindia.com` changing their bulk deal CSV format? Is Telegram rate-limiting the notifications?
 - Find the "Earthquake" outside the building that is causing the failure.
 
 ### Rule 2: NEVER WRITE FIXES OR AUDIT FILES

@@ -23,6 +23,16 @@ The Jules Agent Orchestrator (JAO) is a **Cybernetic Firm Infrastructure**. This
 
 The system operates on an **Agent-Native Lifecycle**. Instead of linear execution, it uses a recursive loop where agents check, build, audit, and verify each other.
 
+### 🔄 The "Document-First" Workflow (The Firm's Pulse)
+The system no longer relies on volatile chat history. Instead, it uses a **Blackboard Architecture** where the shared filesystem is the source of truth.
+
+1.  **The Trigger**: A user request or a "Brainstorming" cycle initiates a session.
+2.  **The Proposal**: `@ada` (Architect) performs research and writes a **`BLUEPRINT.md`** to `JAO/sessions/{id}/inbox/`.
+3.  **The Handshake**: The `OrchestratorEngine` detects the file, hashes it, and stores the metadata in the DB.
+4.  **The Assignment**: The Orchestrator assigns the next agent (e.g., `@pydan`) and feeds the contents of `BLUEPRINT.md` directly into their system prompt.
+5.  **The Implementation**: `@pydan` writes an **`EXECUTION_LOG.md`** and the actual code changes to the repo.
+6.  **The Audit**: Auditors read the implementation log to verify against the original blueprint.
+
 ### 1. The Decision Engine (Orchestrator)
 The `OrchestratorEngine` (in `services/orchestrator.py`) is the "brain" that monitors the field. It performs **Handover Parsing**:
 - It scans the output of every completed agent session for standard tags (e.g., `[NEXT_AGENT: @pydan]`).

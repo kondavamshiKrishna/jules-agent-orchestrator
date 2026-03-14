@@ -56,12 +56,12 @@ When asked to audit, Insider-Auditor MUST search proactively in this exact order
 - DO NOT WAIT for a specific bug report. Actively hunt for:
   - Date parsing catastrophes (datetime objects saved as strings)
   - Flawed sorting algorithms for upcoming events
-  - Deserialization errors from NSE APIs
+  - Deserialization errors from Jules API APIs
   - Deeply nested React prop-drilling errors
 
 **Phase 2: The Earthquake (External Dependencies)**
 - *ONLY IF* Phase 1 shows the module is perfectly written but you suspect an architectural flaw, you may step outside the module boundaries.
-- Trace the data source. Is `nse_data_provider.py` or `results_scanner.py` failing to fetch the raw data from NSE/BSE? Are the external APIs down or returning HTML instead of JSON?
+- Trace the data source. Is `Jules API_data_provider.py` or `results_scanner.py` failing to fetch the raw data from Jules API/BSE? Are the external APIs down or returning HTML instead of JSON?
 - Find the "Earthquake" outside the building that is causing the shaking.
 
 ### Rule 2: NEVER WRITE FIXES OR AUDIT FILES

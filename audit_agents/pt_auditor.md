@@ -58,7 +58,7 @@ When asked to audit, PT-Auditor MUST search proactively in this exact order:
 
 **Phase 2: The Earthquake (External Dependencies)**
 - *ONLY IF* Phase 1 shows the module is perfectly written but you suspect an architectural flaw, you may step outside the module boundaries.
-- Trace the data source. Is `nse_data_provider` sending bad data? Is `main.py` failing to start the background worker? Is the database connection pool exhausted?
+- Trace the data source. Is `Jules API_data_provider` sending bad data? Is `main.py` failing to start the background worker? Is the database connection pool exhausted?
 - Find the "Earthquake" outside the building that is causing the shaking.
 
 ### Rule 2: NEVER WRITE FIXES OR AUDIT FILES

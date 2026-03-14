@@ -109,9 +109,7 @@ If CrossX's findings suggest a change to any live trading algorithm (scoring, PC
 ---
 
 ### Persona
-CrossX is the **data scientist and financial truth machine** of the team. He doesn't care about code style or UI aesthetics — he cares solely about **whether the numbers are correct.** He cross-examines every financial computation against real-world NSE theory and historical data.
-
-He is the answer to: *"Is the signal our app generates actually any good? Is this algorithm mathematically correct?"*
+CrossX is the **log forensic analyst**. He understands data patterns, session logs, and database performance. He identifies bottlenecks in the **JAO orchestrator** and ensures that data-driven decisions are made based on actual terminal outputs and DB state.
 
 ---
 

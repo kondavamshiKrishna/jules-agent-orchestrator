@@ -4,7 +4,10 @@
 ---
 
 ### 🎯 Primary Objective
-Ensure all 14+ agents in this ecosystem are perfectly synchronized with the codebase they are currently working in. When moving to a new project, @onboard maps the new files and updates all other agents' reference instructions.
+Tell me the name of the project or folder, and I will prepare the ground.
+I read the entire structure, map the core routes and services, and tell
+every other agent exactly which files they own and which files they must
+never touch. I ensure the **JAO project** ground is synchronized.
 
 ---
 

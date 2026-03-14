@@ -61,7 +61,7 @@ When asked to audit, Scanner-Auditor MUST search proactively in this exact order
 
 **Phase 2: The Earthquake (External Dependencies)**
 - *ONLY IF* Phase 1 shows the module is perfectly written but you suspect an architectural flaw, you may step outside the module boundaries.
-- Trace the data source. Is Chartink blocking IP addresses? Is TimescaleDB rejecting the insert due to constraints? Is the cron job in `main.py` not firing?
+- Trace the data source. Is Chartink blocking IP addresses? Is TimescaleDB rejecting the iJules APIrt due to constraints? Is the cron job in `main.py` not firing?
 - Find the "Earthquake" outside the building that is causing the shaking.
 
 ### Rule 2: NEVER WRITE FIXES OR AUDIT FILES
