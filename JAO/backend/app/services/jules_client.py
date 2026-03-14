@@ -1,6 +1,9 @@
 import os
+import logging
 from jules_agent_sdk import JulesClient
 from pydantic import BaseModel
+
+logger = logging.getLogger(__name__)
 
 class JulesClientConfig(BaseModel):
     api_key: str
@@ -12,8 +15,8 @@ class JulesService:
         # Note: if jules_agent_sdk expects env vars, we might not pass it directly
         try:
             self.client = JulesClient(api_key=self.api_key)
-        except Exception as e:
-            print(f"Warning: Failed to instantiate SDK. {e}")
+        except Exception:
+            logger.exception("Failed to instantiate SDK")
             self.client = None
             
     def test_connection(self):
@@ -21,8 +24,11 @@ class JulesService:
         if not self.client:
             return False
         try:
+            # We should ideally call something here, but for now just returning True
+            # to preserve existing (placeholder) logic but with better error handling.
             return True
         except Exception:
+            logger.exception("Connection test failed")
             return False
 
     def create_session(self, prompt: str, source: str, title: str, require_plan_approval: bool):
@@ -40,7 +46,7 @@ class JulesService:
             )
             return session
         except Exception as e:
-            print(f"Failed to create session: {e}")
+            logger.exception("Failed to create session")
             return {"error": str(e)}
 
     def list_activities(self, session_id: str):
@@ -49,7 +55,8 @@ class JulesService:
              return []
         try:
             return self.client.activities.list_all(session_id)
-        except Exception as e:
+        except Exception:
+            logger.exception("Failed to list activities")
             return []
             
     def approve_plan(self, session_id: str):
@@ -59,6 +66,7 @@ class JulesService:
              self.client.sessions.approve_plan(session_id)
              return True
         except Exception:
+             logger.exception("Failed to approve plan")
              return False
 
 # In a real app we'd load this from an env variable or DB.
