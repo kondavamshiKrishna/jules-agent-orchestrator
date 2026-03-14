@@ -1,0 +1,37 @@
+﻿docker-compose : time="2026-03-14T12:00:22+05:30" level=warning msg="The 
+\"JULES_API_KEY\" variable is not set. Defaulting to a blank string."
+At line:1 char:1
++ docker-compose up --build -d > docker_build_log.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (time="2026-03-1... blank string 
+   .":String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+time="2026-03-14T12:00:22+05:30" level=warning 
+msg="C:\\Users\\vamsh\\Desktop\\jules agents 
+personas\\jewels_agents\\JAO\\docker-compose.yml: the attribute `version` is 
+obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Image jao-backend Building 
+ Image jao-frontend Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.12kB done
+#1 DONE 0.0s
+
+#2 [frontend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 2B 0.0s done
+#2 DONE 0.1s
+
+#3 [backend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 336B 0.1s done
+#3 DONE 0.2s
+
+#4 [backend internal] load metadata for docker.io/library/python:3.11-slim
+#4 CANCELED
+target frontend: failed to solve: failed to read dockerfile: open 
+Dockerfile: no such file or directory
+
+
+
+View build details: 
+docker-desktop://dashboard/build/default/default/n75t67l4vurbjnd9b7be7pw1q
+

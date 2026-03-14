@@ -1,0 +1,40 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: jao-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      # Mount the personas so the container can read the host files directly
+      - ../:/jewels_agents:ro
+    environment:
+      - JULES_API_KEY=${JULES_API_KEY}
+    restart: unless-stopped
+
+  timescale:
+    image: timescale/timescaledb:latest-pg14
+    container_name: jao-timescale
+    environment:
+      - POSTGRES_DB=jao
+      - POSTGRES_PASSWORD=jao_pass
+      - POSTGRES_USER=jao_user
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./timescale_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: jao-frontend
+    ports:
+      - "3005:80"
+    environment:
+      - VITE_API_URL=http://localhost:8000/api/v1
+    depends_on:
+      - backend
+      - timescale
+    restart: unless-stopped

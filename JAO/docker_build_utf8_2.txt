@@ -1,0 +1,182 @@
+﻿docker : time="2026-03-14T12:18:47+05:30" level=warning msg="The 
+\"JULES_API_KEY\" variable is not set. Defaulting to a blank string."
+At line:1 char:1
++ docker compose up --build -d > docker_build_log_2.txt 2>&1
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (time="2026-03-1... blank string 
+   .":String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+time="2026-03-14T12:18:47+05:30" level=warning 
+msg="C:\\Users\\vamsh\\Desktop\\jules agents 
+personas\\jewels_agents\\JAO\\docker-compose.yml: the attribute `version` is 
+obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Image jao-backend Building 
+ Image jao-frontend Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.12kB done
+#1 DONE 0.0s
+
+#2 [backend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 30B 0.0s
+#2 transferring dockerfile: 336B 0.1s done
+#2 DONE 0.1s
+
+#3 [frontend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 356B 0.1s done
+#3 WARN: FromAsCasing: 'as' and 'FROM' keywords' casing do not match (line 2)
+#3 DONE 0.1s
+
+#4 [backend internal] load metadata for docker.io/library/python:3.11-slim
+#4 ...
+
+#5 [auth] library/nginx:pull token for registry-1.docker.io
+#5 DONE 0.0s
+
+#6 [auth] library/node:pull token for registry-1.docker.io
+#6 DONE 0.0s
+
+#7 [auth] library/python:pull token for registry-1.docker.io
+#7 DONE 0.0s
+
+#8 [frontend internal] load metadata for docker.io/library/node:18-alpine
+#8 ...
+
+#9 [frontend internal] load metadata for docker.io/library/nginx:alpine
+#9 DONE 2.7s
+
+#8 [frontend internal] load metadata for docker.io/library/node:18-alpine
+#8 DONE 3.1s
+
+#4 [backend internal] load metadata for docker.io/library/python:3.11-slim
+#4 DONE 3.5s
+
+#10 [frontend internal] load .dockerignore
+#10 transferring context:
+#10 transferring context: 2B 0.1s done
+#10 DONE 0.2s
+
+#11 [backend internal] load .dockerignore
+#11 transferring context: 2B 0.0s done
+#11 DONE 0.1s
+
+#12 [frontend internal] load build context
+#12 DONE 0.0s
+
+#13 [backend internal] load build context
+#13 transferring context: 1.37kB 0.1s done
+#13 DONE 0.1s
+
+#14 [backend 1/5] FROM docker.io/library/python:3.11-slim@sha256:d6e4d224f70f9e0172a06a3a2eba2f768eb146811a349278b38fff3a36463b47
+#14 resolve docker.io/library/python:3.11-slim@sha256:d6e4d224f70f9e0172a06a3a2eba2f768eb146811a349278b38fff3a36463b47 0.1s done
+#14 DONE 0.1s
+
+#15 [backend 4/5] RUN pip install --no-cache-dir -r requirements.txt
+#15 CACHED
+
+#16 [backend 2/5] WORKDIR /app
+#16 CACHED
+
+#17 [backend 3/5] COPY requirements.txt .
+#17 CACHED
+
+#18 [backend 5/5] COPY ./app ./app
+#18 CACHED
+
+#19 [frontend build 1/6] FROM docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e
+#19 resolve docker.io/library/node:18-alpine@sha256:8d6421d663b4c28fd3ebc498332f249011d118945588d0a35cb9bc4b8ca09d9e 0.1s done
+#19 DONE 0.2s
+
+#20 [frontend stage-1 1/2] FROM docker.io/library/nginx:alpine@sha256:f46cb72c7df02710e693e863a983ac42f6a9579058a59a35f1ae36c9958e4ce0
+#20 resolve docker.io/library/nginx:alpine@sha256:f46cb72c7df02710e693e863a983ac42f6a9579058a59a35f1ae36c9958e4ce0 0.1s done
+#20 CACHED
+
+#21 [backend] exporting to image
+#21 exporting layers
+#21 exporting layers 0.0s done
+#21 exporting manifest sha256:9659fe73342615b732e7ef555ead8c85c7515c111cee64b883c1c92904506568
+#21 exporting manifest sha256:9659fe73342615b732e7ef555ead8c85c7515c111cee64b883c1c92904506568 0.1s done
+#21 exporting config sha256:661c2e4326ceb588f8e71ec86c8dfe24e7add0ddcd248d7e39e09ec95d715e27 0.1s done
+#21 exporting attestation manifest sha256:ef11c62c6eac5e993c3b02b1576cf315acd19dd7b5a8ce2c907577ccf03bff33
+#21 exporting attestation manifest sha256:ef11c62c6eac5e993c3b02b1576cf315acd19dd7b5a8ce2c907577ccf03bff33 0.2s done
+#21 exporting manifest list sha256:9461a2001e75e376e0a24d43872d16661df9abd05a76d2848c1dfa93d5703d82 0.1s done
+#21 naming to docker.io/library/jao-backend:latest
+#21 naming to docker.io/library/jao-backend:latest 0.1s done
+#21 unpacking to docker.io/library/jao-backend:latest 0.0s done
+#21 DONE 1.0s
+
+#12 [frontend internal] load build context
+#12 ...
+
+#22 [backend] resolving provenance for metadata file
+#22 DONE 0.2s
+
+#12 [frontend internal] load build context
+#12 transferring context: 6.53MB 4.7s
+#12 transferring context: 10.54MB 9.8s
+#12 transferring context: 13.01MB 14.8s
+#12 transferring context: 13.87MB 19.8s
+#12 transferring context: 15.22MB 24.9s
+#12 transferring context: 23.77MB 29.9s
+#12 transferring context: 25.09MB 35.0s
+#12 transferring context: 26.40MB 40.0s
+#12 transferring context: 28.22MB 45.0s
+#12 transferring context: 29.64MB 50.1s
+#12 transferring context: 45.83MB 55.1s
+#12 transferring context: 58.06MB 60.2s
+#12 transferring context: 59.44MB 65.3s
+#12 transferring context: 69.60MB 70.4s
+#12 transferring context: 70.52MB 72.7s done
+#12 DONE 73.0s
+
+#23 [frontend build 2/6] WORKDIR /app
+#23 CACHED
+
+#24 [frontend build 3/6] COPY package*.json ./
+#24 CACHED
+
+#25 [frontend build 4/6] RUN npm ci
+#25 CACHED
+
+#26 [frontend build 5/6] COPY . .
+#26 DONE 16.2s
+
+#27 [frontend build 6/6] RUN npm run build
+#27 7.724 npm error Missing script: "build"
+#27 7.724 npm error
+#27 7.724 npm error To see a list of scripts, run:
+#27 7.724 npm error   npm run
+#27 7.747 npm error A complete log of this run can be found in: /root/.npm/_logs/2026-03-14T06_50_32_659Z-debug-0.log
+#27 ERROR: process "/bin/sh -c npm run build" did not complete successfully: exit code: 1
+------
+ > [frontend build 6/6] RUN npm run build:
+7.724 npm error Missing script: "build"
+7.724 npm error
+7.724 npm error To see a list of scripts, run:
+7.724 npm error   npm run
+7.747 npm error A complete log of this run can be found in: /root/.npm/_logs/2026-03-14T06_50_32_659Z-debug-0.log
+------
+Dockerfile:7
+
+--------------------
+
+   5 |     RUN npm ci
+
+   6 |     COPY . .
+
+   7 | >>> RUN npm run build
+
+   8 |     
+
+   9 |     # Production stage
+
+--------------------
+
+target frontend: failed to solve: process "/bin/sh -c npm run build" did not 
+complete successfully: exit code: 1
+
+
+
+View build details: 
+docker-desktop://dashboard/build/default/default/o76agv5mq9zs7leyhxxlrrk5t
+

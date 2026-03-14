@@ -1,0 +1,5 @@
+﻿CONTAINER ID   IMAGE                               COMMAND                  CREATED        STATUS                        PORTS     NAMES
+a354b91ebd58   advisor-frontend                    "/docker-entrypoint.ΓÇª"   14 hours ago   Exited (0) 18 minutes ago               advisor-frontend
+43190ca104e4   advisor-worker                      "python worker.py"       14 hours ago   Exited (0) 18 minutes ago               advisor-worker
+e9db581d0f66   advisor-backend                     "./start.sh"             14 hours ago   Exited (137) 18 minutes ago             advisor-backend
+47c4ad993887   timescale/timescaledb:latest-pg14   "docker-entrypoint.sΓÇª"   14 hours ago   Exited (137) 17 minutes ago             advisor-db

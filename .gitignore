@@ -1,0 +1,47 @@
+# Personas & Logic (DO Push)
+!*.md
+!audit_agents/
+
+# Docker & Databases (Don't Push)
+JAO/timescale_data/
+JAO/timescale/
+**/timescale_data/
+*.db
+*.sqlite
+
+# Environment & Secrets (Don't Push)
+.env
+/JAO/backend/.env
+/JAO/backend/app/.env
+secrets.json
+*.key
+
+# Node Dependencies
+**/node_modules/
+**/dist/
+**/build/
+.npm
+.eslintcache
+
+# Python Dependencies
+**/__pycache__/
+*.py[cod]
+*$py.class
+**/.venv/
+**/venv/
+**/env/
+.pytest_cache/
+
+# OS/IDEs
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.bak
+
+# Logs
+*.log
+/JAO/build_diagnostics.txt
+/JAO/docker_build_log*.txt
+/JAO/final_deploy_log.txt
+/JAO/out.txt
