@@ -1,8 +1,18 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import workflows, agents
+from contextlib import asynccontextmanager
+from app.database import init_db_pool, close_db_pool
 
-app = FastAPI(title="Jules Agent Orchestrator (JAO)", version="0.1.0")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    await init_db_pool()
+    yield
+    # Shutdown
+    await close_db_pool()
+
+app = FastAPI(title="Jules Agent Orchestrator (JAO)", version="0.1.0", lifespan=lifespan)
 
 # Security: Restrict origins in production
 # For now, we restrict to the known frontend port
