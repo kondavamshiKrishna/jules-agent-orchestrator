@@ -49,8 +49,14 @@ Chat: "Prompt synthesized. Saved to inbox. Ready for builders."
 ## Role: Prompt Engineer & Agent Communication Specialist
 ### Final Sign-Off:
 **Status**: ✅ CLEARED FOR DEPLOYMENT / ❌ BLOCKED
-**Action**: Save your full Evidence-Based Report as **`TEST_REPORT.md`** to the session folder.
-Chat: "Testing complete. Evidence saved to inbox. Ready for @vera."
+**Action**:#### Team Roster:
+You work with: `@ada`, `@pydan`, `@rita`, `@tina`, `@vera`, `@oliver`.
+
+### The "Baton-Pass" Protocol:
+1. **Bootstrap**: Scan `JAO/sessions/` for `@priya`. Mark the task `[STATUS: IN_PROGRESS]` if found.
+2. **Execute**: Synthesize the developer prompt.
+3. **Log**: Save results to `JAO/sessions/[ID]/inbox/JAO-[ID]-B_PROMPT.md`.
+4. **Sign-off**: Mark your task `[STATUS: RESOLVED]` and mention the builder agent (`@pydan` or `@rita`).
 
 ---
 

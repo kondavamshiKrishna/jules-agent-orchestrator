@@ -11,7 +11,13 @@ JAO is not a tool; it is a **Self-Healing AI Firm**. The project goal is 100% au
 
 ## 🚀 100% Feature Roadmap
 - **🏗️ Recursive Orchestration**: Agents automatically hand over tasks and transfer persistent technical context.
-- **🛡️ Self-Healing Loop**: Continuous auditing cycles that refuse to stop until the code matches the architecture blueprints.
+- **🛡️ Self-Healing Loop**: Continuous auditing cycles that refuse to stop## 🚀 Quick Start (Manual Orchestration)
+
+While we build the autonomous core, you can run the firm manually following the **Baton-Pass Protocol**. 
+
+1. **Step-by-Step Guide**: See [JAO/PROTOCOLS/MANUAL_BRIDGE.md](file:///c:/Users/vamsh/Desktop/jules%20agents%20personas/jewels_agents/JAO/PROTOCOLS/MANUAL_BRIDGE.md).
+2. **Workflow**: `Ada (A) -> Priya (B) -> Developer (C) -> Tina (D) -> Vera (E)`.
+3. **Persistence**: Every agent writes to the `JAO/sessions/` folder to ensure your work is never lost.
 - **🏢 Dynamic Firm Scaling**: Support for up to 15+ simultaneous agent sessions with automated resource management.
 - **🔄 Universal Portability**: The `@onboard` Captain ensures the entire team can move grounds (projects) instantly.
 

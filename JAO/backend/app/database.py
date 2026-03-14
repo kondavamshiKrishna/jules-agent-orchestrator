@@ -1,3 +1,4 @@
+# Note: Ensure 'asyncpg' is installed via winget or pip
 import asyncpg
 import json
 from decimal import Decimal

@@ -15,7 +15,43 @@ To achieve zero-human interaction, the system moves from "User Start" to "Event 
 
 ---
 
-## 🧠 2. The "Idle-State" Brainstormer
+### 🏗️ 2. The "Team Roster" & Cross-Agent Awareness
+Every agent in the firm is aware of its teammates. They do not just "work alone"; they tag each other to handover tasks.
+
+#### The JAO Team Roster:
+- **@ada**: The Architect (High-level design & Blueprints)
+- **@priya**: The PromptCraft Engineer (Synthesizes developer instructions)
+- **@pydan**: The Backend Developer (Python, FastAPI, SQL)
+- **@rita**: The Frontend Developer (React, Tailwind, UI/UX)
+- **@tina**: The QA Engineer (Testing, Docker, Validation)
+- **@vera**: The Verifier (Security Audit, Final Sign-off, Merge)
+- **@oliver**: The DevOps Lead (CI/CD, Infrastructure)
+
+#### 🔍 The "Auto-Scan" Bootstrap Protocol:
+When an agent starts, its **First Act** is to scan the project:
+1.  **Check `JAO/sessions/`**: Look for any `.md` file that mentions their tag (e.g., `@rita`) but is not marked as `[STATUS: RESOLVED]`.
+2.  **Transition to `[STATUS: IN_PROGRESS]`**: Immediately update the file to signal work has begun.
+3.  **Execute**: Perform the task based on the contents of the last sequence file.
+4.  **Handoff**: Write a new sequence file, mention the next agent (e.g., `@tina`), and mark your portion as `[STATUS: RESOLVED]`.
+
+#### Infrastructure: The Event-Driven Loop
+Instead of waiting for a user, the **JAO Backend** acts as a "Mission Control":
+1.  **Git Polling/Webhook**: Backend detects a PR push from an agent.
+2.  **Context Extraction**: Backend reads the latest numbering code (e.g., `B_PROMPT.md`) from the PR metadata.
+3.  **Bootstrapping**: Backend spawns the next agent in the sequence (`C`) and injects the contents of `B` directly into its system prompt.
+4.  **Auto-Merge**: Once a session reaches `@vera` (Verifier) and passes, the Backend autonomously merges the PR into `main`.
+
+---
+
+## 🔄 5. The Life Cycle of a Task (Step-by-Step)
+
+Here is exactly how the system "knows" and "acts":
+
+1. **Spark**: User asks for a feature.
+2. **Design (@ada)**: Writes `JAO-123-A_BLUEPRINT.md`.
+3. **Detection**: JAO Backend scans the folder, reads `A`, and identifies it as the source for `B`.
+4. **Injection**: JAO sends `A`'s content to `@priya`. Она (Priya) is "born" with the blueprint in her memory.
+5. **Recursive Build**: The loop continues (B -> C -> D -> E) until `@vera` merges the PR.
 When no active tasks are in the queue, the Orchestrator does not sleep. It enters **Brainstorming Mode**.
 
 - **Orchestrator Logic**: `if active_sessions == 0 and idle_time > 10m: Spawn(@brainstorm_agent)`.
@@ -27,7 +63,21 @@ When no active tasks are in the queue, the Orchestrator does not sleep. It enter
 
 ---
 
-## 📜 3. Persistent Memory & Session Tracking
+### 🛡️ 4. The "Immutable Core Prompt" Philosophy
+Traditionally, users write a new prompt for every task. In the JAO architecture, **you never write a prompt twice**.
+
+- **The Core DNA**: The agent's persona file (e.g., `rita_frontend.md`) is its "Immutable DNA." It contains her skills, her team awareness, and her "First Act" (scanning).
+- **The Task Document**: The specific work instructions (e.g., "Add a button") are stored in a **Dynamic Task Document** in the `sessions/` folder.
+- **The Activation**: You simply run the "Core DNA". The agent wakes up, scans the folder, finds their tag (`@rita`), and "self-instantiates" their specific mission for that day.
+
+#### Advantages:
+1. **Zero Prompt Decay**: No more copy-pasting long instructions.
+2. **Context Continuity**: The agent sees the *history* of the folder, not just a single chat window.
+3. **Auditability**: You can see exactly what prompted an agent's decision by looking at the `.md` file in the session folder.
+
+---
+
+## 📜 4. Persistent Memory & Session Tracking
 A professional-grade system needs a **Single Source of Truth** for agent state.
 
 ### 🗃️ Session State Table (DB)

@@ -33,14 +33,39 @@ The system no longer relies on volatile chat history. Instead, it uses a **Black
 5.  **The Implementation**: `@pydan` writes an **`EXECUTION_LOG.md`** and the actual code changes to the repo.
 6.  **The Audit**: Auditors read the implementation log to verify against the original blueprint.
 
-### 1. The Decision Engine (Orchestrator)
-The `OrchestratorEngine` (in `services/orchestrator.py`) is the "brain" that monitors the field. It performs **Handover Parsing**:
-- It scans the output of every completed agent session for standard tags (e.g., `[NEXT_AGENT: @pydan]`).
-- It extracts the **Context Payload** (the prompt for the next agent).
-- It initiates a "Context Transfer" where the results of the previous work are passed to the next specialist.
+### 1. The Decision Engine & Workflow Ledger (Blackboard Ledger)
+To solve the "Asynchronous Handover" problem (where an agent pushes to a PR and waits), the system uses a **Workflow Ledger**:
 
-### 2. Session Lifecycle & Dynamic Scaling (100% Scope)
-- **Simultaneous Session Control**: The Orchestrator tracks a `MAX_AGENTS` constant. If the limit is 5, and 10 tasks are queued, the system maintains a "Waiting Room" in the database.
+- **Location**: `JAO/state/active_workflows.json` (Local) and `workflow_runs` table (DB).
+- **Structure**:
+  ```json
+  {
+    "session_id": "99ea-123",
+    "current_holder": "@pydan",
+    "status": "PROCESSING",
+    "handover_file": "JAO/sessions/99ea-123/handover.md",
+    "branch": "feature/ui-update-99ea"
+  }
+  ```
+
+### 2. The "Handover Handshake" (Event-Driven)
+1.  **Commit Trigger**: When an agent finishes, it commits its work and the `handover.md` to a new branch.
+2.  **Webhook Detection**: The JAO Backend receives a GitHub `push` or `pull_request` webhook.
+3.  **Blackboard Check**: The Orchestrator reads the code *inside the PR* (using GitHub API) to extract the `handover.md`.
+4.  **Autonomous Spawn**: The Orchestrator automatically spawns the `next_agent` defined in the handover, passing the PR's content as context.
+
+### 3. Context Injection (The "Born with Memory" Hack)
+The biggest problem in multi-agent systems is "Context Loss." JAO solves this via **Injection**:
+
+- **Mechanism**: When the Orchestrator starts a new agent session, it prepends the previous agent's output file to the system prompt.
+- **Implementation**:
+  ```python
+  previous_work = read_file("JAO-123-A_BLUEPRINT.md")
+  jules.sessions.create(
+      prompt=f"You are @priya. Here is the blueprint you must engineers: {previous_work}"
+  )
+  ```
+- **Result**: The agent feels like it was "part of the conversation" from the start.
 - **Autonomous Teardown**: As soon as an agent emits a `Done ✅` signal, the Orchestrator immediately:
     1. Synchronizes the VM filesystem with the main repository.
     2. Flushes the ephemeral session memory to the **Global Context Store** in TimescaleDB.
