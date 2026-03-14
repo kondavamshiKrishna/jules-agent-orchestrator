@@ -132,7 +132,14 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
             
         # 4. Poll for activities and completion
         final_output = ""
+        timeout_counter = 0
         while True:
+            # Prevent infinite hang. Assumes 1 hour max (720 * 5s)
+            if timeout_counter > 720:
+                 final_output = "ERROR: Timeout waiting for agent to finish."
+                 break
+            timeout_counter += 1
+
             # Re-fetch from DB if we need robust resume/kill checking.
             # For now, just poll Jules
             activities = client.list_activities(session_id)

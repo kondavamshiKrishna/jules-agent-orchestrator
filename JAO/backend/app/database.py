@@ -6,10 +6,28 @@ db_pool = None
 
 async def init_db_pool():
     global db_pool
-    # Real app would use env vars for DSN
-    db_pool = await asyncpg.create_pool(
-        dsn="postgresql://jao_user:jao_pass@timescale:5432/jao"
-    )
+    dsn = "postgresql://jao_user:jao_pass@timescale:5432/jao"
+
+    # First connect to create the schema if it doesn't exist
+    try:
+        conn = await asyncpg.connect(dsn)
+        await conn.execute("""
+            CREATE TABLE IF NOT EXISTS workflow_runs (
+                run_id UUID PRIMARY KEY,
+                status VARCHAR(255) NOT NULL,
+                current_agent VARCHAR(255),
+                task TEXT,
+                history JSONB,
+                created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+            );
+        """)
+        await conn.close()
+    except Exception as e:
+        print(f"Warning: Failed to initialize schema automatically: {e}")
+
+    # Then create the pool
+    db_pool = await asyncpg.create_pool(dsn=dsn)
 
 async def close_db_pool():
     global db_pool
@@ -32,11 +50,8 @@ def json_safe(obj):
         return {k: json_safe(v) for k, v in obj.items()}
     if isinstance(obj, Decimal):
         return float(obj)
-    # Could handle UUIDs, datetimes here if needed by converting to str
     if hasattr(obj, 'isoformat'): # datetime handling
         return obj.isoformat()
-    # UUID handling is usually done gracefully by FastAPI's JSONResponse,
-    # but we can force it to str to be safe.
     from uuid import UUID
     if isinstance(obj, UUID):
         return str(obj)

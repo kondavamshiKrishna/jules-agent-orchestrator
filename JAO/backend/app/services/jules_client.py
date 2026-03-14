@@ -1,5 +1,4 @@
 import os
-from jules_agent_sdk import JulesClient
 from pydantic import BaseModel
 
 class JulesClientConfig(BaseModel):
@@ -9,8 +8,9 @@ class JulesService:
     def __init__(self, api_key: str):
         # We initialize the real JulesClient here using the provided SDK
         self.api_key = api_key
-        # Note: if jules_agent_sdk expects env vars, we might not pass it directly
+        # Move the import inside try/except in case the SDK is missing
         try:
+            from jules_agent_sdk import JulesClient
             self.client = JulesClient(api_key=self.api_key)
         except Exception as e:
             print(f"Warning: Failed to instantiate SDK. {e}")

@@ -6,8 +6,13 @@ from typing import List
 
 router = APIRouter()
 
-# Assuming the backend is inside JAO/backend, the agents are two levels up
-AGENTS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+# Check if we are running inside Docker where the folder is mounted as /jewels_agents
+if os.path.exists("/jewels_agents"):
+    AGENTS_DIR = "/jewels_agents"
+else:
+    # Assuming the backend is inside JAO/backend, the agents are two levels up for local testing
+    AGENTS_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../"))
+
 AUDIT_AGENTS_DIR = os.path.join(AGENTS_DIR, "audit_agents")
 
 @router.get("/", response_model=List[AgentPersona])
