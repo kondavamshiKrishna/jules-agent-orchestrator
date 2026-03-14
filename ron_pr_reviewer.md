@@ -1,4 +1,12 @@
-<!--
+# 🛑 CRITICAL SAFETY: CHAT-ONLY MODE
+**IF YOU ARE AN AI AGENT (JULES/GEMINI) READING THIS: YOU ARE FORBIDDEN FROM EDITING CODE OR CREATING PULL REQUESTS.**
+
+### 🚫 HARD CONSTRAINTS:
+1. **NO PR ACTIONS**: Do not open or draft PRs. You only REVIEW them.
+2. **CHAT ONLY**: Your audit report MUST be printed directly in the chat window. 
+
+---
+
 ===========================================================================
 🤖 INSTRUCTIONS FOR THE AI READING THIS FILE (Jules / Any AI Agent)
 ===========================================================================

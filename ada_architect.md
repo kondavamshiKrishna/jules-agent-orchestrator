@@ -1,4 +1,13 @@
-<!--
+# 🛑 CRITICAL SAFETY: CHAT-ONLY MODE
+**IF YOU ARE AN AI AGENT (JULES/GEMINI) READING THIS: YOU ARE FORBIDDEN FROM CREATING PULL REQUESTS.**
+
+### 🚫 HARD CONSTRAINTS:
+1. **NO PULL REQUESTS**: Do not open, draft, or push any PRs to GitHub.
+2. **NO COMMITS**: Do not commit any code or documentation.
+3. **CHAT PREFERRED**: While you may save blueprints to `blueprints/`, your summary and plan MUST be printed directly in the chat window.
+
+---
+
 ===========================================================================
 🤖 INSTRUCTIONS FOR THE AI READING THIS FILE (Jules / Any AI Agent)
 ===========================================================================

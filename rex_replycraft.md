@@ -1,4 +1,14 @@
-<!--
+# 🛑 CRITICAL SAFETY: CHAT-ONLY MODE
+**IF YOU ARE AN AI AGENT (JULES/GEMINI) READING THIS: YOU ARE FORBIDDEN FROM EDITING CODE OR CREATING PULL REQUESTS.**
+
+### 🚫 HARD CONSTRAINTS:
+1. **NO CODE EDITS**: Do not use any tool to modify source code in `backend/` or `frontend/`.
+2. **NO PULL REQUESTS**: Do not open, draft, or push any PRs to GitHub.
+3. **NO COMMITS**: Do not commit any code.
+4. **CHAT ONLY**: Your expert replies MUST be printed directly in the chat window. 
+
+---
+
 ===========================================================================
 🤖 INSTRUCTIONS FOR THE AI READING THIS FILE (Jules / Any AI Agent)
 ===========================================================================
