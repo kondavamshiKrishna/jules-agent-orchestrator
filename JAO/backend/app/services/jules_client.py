@@ -16,7 +16,10 @@ class JulesService:
         try:
             from jules_agent_sdk import JulesClient
             self.client = JulesClient(api_key=self.api_key)
-        except Exception:
+        except ImportError as e:
+            logger.exception("Failed to import SDK")
+            self.client = None
+        except Exception as e:
             logger.exception("Failed to instantiate SDK")
             self.client = None
             
@@ -28,7 +31,7 @@ class JulesService:
             # We should ideally call something here, but for now just returning True
             # to preserve existing (placeholder) logic but with better error handling.
             return True
-        except Exception:
+        except Exception as e:
             logger.exception("Connection test failed")
             return False
 
@@ -56,7 +59,7 @@ class JulesService:
              return []
         try:
             return self.client.activities.list_all(session_id)
-        except Exception:
+        except Exception as e:
             logger.exception("Failed to list activities")
             return []
             
@@ -66,7 +69,7 @@ class JulesService:
         try:
              self.client.sessions.approve_plan(session_id)
              return True
-        except Exception:
+        except Exception as e:
              logger.exception("Failed to approve plan")
              return False
 
