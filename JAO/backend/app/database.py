@@ -11,6 +11,23 @@ async def init_db_pool():
         dsn="postgresql://jao_user:jao_pass@timescale:5432/jao"
     )
 
+
+async def init_db_schema():
+    global db_pool
+    if db_pool:
+        async with db_pool.acquire() as conn:
+            await conn.execute(
+                '''
+                CREATE TABLE IF NOT EXISTS workflow_runs (
+                    run_id UUID PRIMARY KEY,
+                    status VARCHAR(50),
+                    current_agent VARCHAR(100),
+                    task TEXT,
+                    history JSONB
+                )
+                '''
+            )
+
 async def close_db_pool():
     global db_pool
     if db_pool:

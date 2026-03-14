@@ -113,7 +113,11 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
             
         # 4. Poll for activities and completion
         final_output = ""
+        timeout_counter = 0
         while True:
+            timeout_counter += 1
+            if timeout_counter > 12:  # 60 seconds
+                break
             # Re-fetch from DB if we need robust resume/kill checking.
             # For now, just poll Jules
             activities = client.list_activities(session_id)

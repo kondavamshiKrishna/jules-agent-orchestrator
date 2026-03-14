@@ -1,6 +1,6 @@
 import os
 import logging
-from jules_agent_sdk import JulesClient
+
 from pydantic import BaseModel
 
 logger = logging.getLogger(__name__)
@@ -14,6 +14,7 @@ class JulesService:
         self.api_key = api_key
         # Note: if jules_agent_sdk expects env vars, we might not pass it directly
         try:
+            from jules_agent_sdk import JulesClient
             self.client = JulesClient(api_key=self.api_key)
         except Exception:
             logger.exception("Failed to instantiate SDK")
