@@ -9,23 +9,26 @@ from app.models.api import RunWorkflowRequest, WorkflowResponse
 from app.routes.agents import AGENTS_DIR
 import os
 
-router = APIRouter()
+from app.database import get_db_pool, json_safe
+import json
 
-# In-memory store for demo. Phase 2: Move to SQLite
-active_workflows = {}
+router = APIRouter()
 
 @router.post("/run", response_model=WorkflowResponse)
 async def run_workflow(request: RunWorkflowRequest):
     """Starts a new workflow chain"""
     run_id = str(uuid.uuid4())
     
-    # Initialize state
-    active_workflows[run_id] = {
-        "status": "STARTING",
-        "current_agent": request.starting_agent,
-        "task": request.task,
-        "history": []
-    }
+    # Insert initial state into DB
+    pool = get_db_pool()
+    async with pool.acquire() as conn:
+        await conn.execute(
+            """
+            INSERT INTO workflow_runs (run_id, status, current_agent, task, history)
+            VALUES ($1::uuid, $2, $3, $4, $5)
+            """,
+            run_id, "STARTING", request.starting_agent, request.task, "[]"
+        )
     
     # We don't await this so the UI gets a fast response
     asyncio.create_task(_run_engine_loop(run_id, request))
@@ -38,21 +41,40 @@ async def run_workflow(request: RunWorkflowRequest):
 
 @router.get("/{run_id}")
 async def get_workflow_status(run_id: str):
-    if run_id not in active_workflows:
-        return {"error": "Not found"}
-    return active_workflows[run_id]
+    pool = get_db_pool()
+    async with pool.acquire() as conn:
+        record = await conn.fetchrow(
+            """
+            SELECT status, current_agent, task, history
+            FROM workflow_runs
+            WHERE run_id = $1::uuid
+            """,
+            run_id
+        )
+        if not record:
+            return {"error": "Not found"}
+
+        # Need to deserialize JSONB string back to dict/list
+        state = dict(record)
+        if state.get("history") and isinstance(state["history"], str):
+             state["history"] = json.loads(state["history"])
+        return json_safe(state)
 
 async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
     """The infinite loop described in the architecture plan"""
     client = get_jules_client()
-    state = active_workflows[run_id]
+    pool = get_db_pool()
     
     # Loop variables
     current_agent = request.starting_agent
     current_prompt = f"USER TASK: {request.task}"
     
     while current_agent:
-        state["status"] = f"AGENT_ACTIVE: {current_agent}"
+        async with pool.acquire() as conn:
+            await conn.execute(
+                "UPDATE workflow_runs SET status = $1, current_agent = $2 WHERE run_id = $3::uuid",
+                f"AGENT_ACTIVE: {current_agent}", current_agent, run_id
+            )
         
         # 1. Load the persona from the .md file
         try:
@@ -78,7 +100,11 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
         
         session_id = session.get("id")
         if not session_id or "error" in session:
-            state["status"] = f"ERROR: {session.get('error', 'Failed to create session')}"
+            async with pool.acquire() as conn:
+                await conn.execute(
+                    "UPDATE workflow_runs SET status = $1 WHERE run_id = $2::uuid",
+                    f"ERROR: {session.get('error', 'Failed to create session')}", run_id
+                )
             break
             
         # 3. If it's Interactive Mode, approve the plan automatically (for demo)
@@ -88,21 +114,15 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
         # 4. Poll for activities and completion
         final_output = ""
         while True:
+            # Re-fetch from DB if we need robust resume/kill checking.
+            # For now, just poll Jules
             activities = client.list_activities(session_id)
-            # Find the most recent activity that marks completion or output
-            # In Jules, completion often means the agent has stopped writing or specific metadata.
-            # For this MVP, we look for 'COMPLETED' status or final message.
-            # Real SDK might have a 'wait_for_completion' or activity status 'AGENT_PROCESS_DONE'
             
-            # Simple polling logic:
             if activities:
-                # Let's assume the last activity with text is the output
                 text_activities = [a for a in activities if a.get("type") == "message" and a.get("role") == "assistant"]
                 if text_activities:
                     final_output = text_activities[-1].get("text", "")
             
-            # Check if session is done (this would depend on SDK activity types)
-            # Placeholder: Check if any activity has 'status': 'completed'
             is_done = any(a.get("status") == "completed" for a in activities)
             if is_done:
                 break
@@ -110,11 +130,25 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
             await asyncio.sleep(5)
             
         # Log to history
-        state["history"].append({
+        new_history_entry = {
             "agent": current_agent,
             "session_id": session_id,
             "output": final_output
-        })
+        }
+
+        async with pool.acquire() as conn:
+             # Fetch current history, append, and update.
+             record = await conn.fetchrow("SELECT history FROM workflow_runs WHERE run_id = $1::uuid", run_id)
+             if record:
+                 history_str = record["history"] or "[]"
+                 history = json.loads(history_str) if isinstance(history_str, str) else history_str
+                 if isinstance(history, str):
+                      history = json.loads(history) # parse again if it was double stringified
+                 history.append(new_history_entry)
+                 await conn.execute(
+                     "UPDATE workflow_runs SET history = $1 WHERE run_id = $2::uuid",
+                     json.dumps(history), run_id
+                 )
         
         # 5. Parse for the next agent
         next_step = OrchestratorEngine.parse_handover(final_output)
@@ -124,5 +158,9 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
             current_prompt = next_step["prompt"]
             request.interactive = (next_step["mode"] == "Interactive Plan")
         else:
-            state["status"] = "COMPLETED"
+            async with pool.acquire() as conn:
+                await conn.execute(
+                    "UPDATE workflow_runs SET status = $1, current_agent = NULL WHERE run_id = $2::uuid",
+                    "COMPLETED", run_id
+                )
             break
