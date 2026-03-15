@@ -60,6 +60,11 @@ async def get_workflow_status(run_id: str):
              state["history"] = json.loads(state["history"])
         return json_safe(state)
 
+
+def _read_persona_sync(path: str) -> str:
+    with open(path, "r", encoding="utf-8") as f:
+        return f.read()
+
 async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
     """The infinite loop described in the architecture plan"""
     client = get_jules_client()
@@ -95,8 +100,7 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
             if not abs_persona_path.startswith(abs_agents_dir + os.sep):
                 raise ValueError("Path traversal attempt detected.")
             
-            with open(abs_persona_path, "r", encoding="utf-8") as f:
-                persona_content = f.read()
+            persona_content = await asyncio.to_thread(_read_persona_sync, abs_persona_path)
         except Exception as e:
             persona_content = f"Error loading persona: {e}"
             
