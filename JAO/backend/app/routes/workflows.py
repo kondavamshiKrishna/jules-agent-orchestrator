@@ -103,7 +103,8 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
         full_prompt = f"IDENTITY:\n{persona_content}\n\nTASK:\n{current_prompt}"
         
         # 2. Create the session
-        session = client.create_session(
+        session = await asyncio.to_thread(
+            client.create_session,
             prompt=full_prompt,
             source=request.github_repo_id,
             title=f"JAO: {current_agent} run",
@@ -121,7 +122,7 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
             
         # 3. If it's Interactive Mode, approve the plan automatically (for demo)
         if request.interactive:
-            client.approve_plan(session_id)
+            await asyncio.to_thread(client.approve_plan, session_id)
             
         # 4. Poll for activities and completion
         final_output = ""
@@ -132,7 +133,7 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
                 break
             # Re-fetch from DB if we need robust resume/kill checking.
             # For now, just poll Jules
-            activities = client.list_activities(session_id)
+            activities = await asyncio.to_thread(client.list_activities, session_id)
             
             if activities:
                 text_activities = [a for a in activities if a.get("type") == "message" and a.get("role") == "assistant"]
