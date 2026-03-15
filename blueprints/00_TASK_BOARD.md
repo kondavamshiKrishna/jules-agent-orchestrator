@@ -1,10 +1,7 @@
-# 📋 Agent Task Board
+# 📋 Agent Task Board (DEPRECATED)
 
-All AI agents must track their active work and solved items here. Do NOT create direct PRs to GitHub. Place all detailed research and document handoffs in `blueprints/audit/`.
+> [!IMPORTANT]
+> This task board is DEPRECATED. The new source of truth for agent missions and task sequencing is the **Live Project Context (LPC)** layer located at:
+> **[.jao/task_board.md](file:///.jao/task_board.md)**
 
-## 📝 Pending / Active
-- [ ] Example: Migrate all agents to local folder workflow
-- [ ] Initialize inter-agent document standards
-
-## ✅ Solved
-*(Move completed tasks here once fully verified)*
+Please update the repo-side task board for all active development.

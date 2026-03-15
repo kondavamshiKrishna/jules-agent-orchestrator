@@ -1,48 +1,28 @@
 # Konda Stock Advisor — Jules AI Agent Master Plan
-**Team Size**: 12 Agents | **Stack**: Python/FastAPI + React/Vite + TimescaleDB + Docker
+**Team Size**: 30+ Agents | **Stack**: Python/FastAPI + React/Vite + TimescaleDB + Docker
 
 ---
+## 🗺️ Quick Reference Table: Core Agent Firm
+**LPC v2.1 (Boston Pass Standard)**
 
-## 🗺️ Quick Reference Table — All 12 Agents
+| # | Who | Tag | Role | Boston Pass Context |
+|---|---|---|---|---|
+| 1 | 🧠 **Syncer Master** | `@syncer` | **Master Orchestrator** | Monitors `.jao/task_board.md`, sequences sessions, and coordinates PR reviews. |
+| 2 | ✍️ **Priya PromptCraft**| `@priya` | Instruction Synth | Writes the specific "Mission Brief" for the BUILD phase. |
+| 3 | 🏛️ **Ada Architect** | `@ada` | System Design | Writes `.md` blueprints for every new feature. |
+| 4 | 🛡️ **Ron Reviewer** | `@ron` | PR Auditor | Audits GitHub diffs against benchmarks. |
+| 5 | 🔬 **Nova Research** | `@nova` | Gap Discovery | Conducts deep-dives to find missing innovation. |
+| 6 | 🔍 **Vera Verifier** | `@vera` | Safety Gate | Final sign-off on code changes/merges. |
+| 7 | 🐍 **Py-Dan Backend** | `@pydan` | Python/API Dev | Owns `backend/` and core logic. |
+| 8 | ⚛️ **React-Rita** | `@rita` | UI/UX Dev | Owns `frontend/` and React state. |
+| 9 | 🧪 **Test-Tina** | `@tina` | QA Engineer | Runs tests and validates math correctness. |
+| 10 | 🔧 **Ops-Oliver** | `@oliver` | Infrastructure | Owns Docker, DB Schema, and Security. |
+| 11 | 📊 **CrossX Analyst** | `@crossx` | Data Science | Audits financial algorithms and performance. |
+| 12 | 👑 **Omega Auditor** | `@omega` | Strategic CTO | Macro-audits project health and architecture. |
+| 13 | 🛳️ **Bootstrap** | `@onboard` | System Setup | Scans repo and initializes the `.jao/` layer. |
 
-| # | Who | Tag | Jules Mode | Job Description | Files They Touch |
-|---|-----|-----|-----------|-----------------|-----------------|
-
-| 1 | ✍️ **Priya PromptCraft** | `@priya` | 💬 Interactive Plan | **START HERE for a new task.** Reads the codebase, identifies the right agent, and writes a complete expert-level prompt with exact file paths, line numbers, before/after code, and verification steps. She never codes. | None — reads only |
-
-
-| 2 | 🛟 **Rex ReplyCraft** | `@rex` | 💬 Interactive Plan | **USE THIS MID-TASK.** If an active agent asks you a complicated question or gets stuck, paste their message to Rex. He reads the code, translates your simple idea, and writes the perfect reply prompt for you to copy-paste back. | None — reads only |
-
-
-| 3 | 🛡️ **Ron PR-Reviewer** | `@ron` | 💬 Interactive Plan | **USE THIS FOR GITHUB PRs.** When Jules finishes work and opens a PR, give it to Ron. He audits the code for safety and tells you exactly which button to click (Approve/Request Changes/Close) and gives you the exact comment to paste. | None — reads only |
-
-
-| 4 | 🔬 **Nova Research** | `@nova` | 💬 Interactive Plan | **START HERE for gap-finding or innovation.** Tell her a module name. She reads every file in it, asks herself hard questions, researches free GitHub repos and data sources, and delivers a full blueprint of gaps and improvements. | None — reads only |
-
-
-| 5 | 🏛️ **Ada Architect** | `@ada` | 💬 Interactive Plan | Called first for any new feature. Checks if it already exists, hunts for free libraries, evaluates effort vs value, and writes a detailed blueprint. Nothing goes to a developer without Ada's approval. | `blueprints/` docs only |
-
-
-| 6 | 🔍 **Vera Verifier** | `@vera` | 👁️ Review Plan | Reads Ada's blueprint and the actual code to find conflicts, async bugs, DB risks, and API contract breaks. Provides a full checklist report. Nothing moves to coding without Vera's sign-off. | Reads all — writes none |
-
-
-| 7 | 🐍 **Py-Dan Backend** | `@pydan` | 💬 Interactive Plan | The most critical developer. Owns all of `backend/`. Writes complete before/after code blocks for every change — FastAPI routes, background workers, NSE data, AI prompts, Telegram, paper trading. | `backend/` only |
-
-
-| 8 | ⚛️ **React-Rita Frontend** | `@rita` | ▶️ Start | Writes all React/CSS. Delivers complete JSX + CSS together every time. Never makes partial edits. Checks that API data exists before building any UI for it. | `frontend/src/` only |
-
-
-| 9 | 🔧 **Ops-Oliver DevOps** | `@oliver` | 👁️ Review Plan | Manages Docker, TimescaleDB schema, and deployment config. Always shows forward migration + rollback SQL before running anything. Verifies all 3 containers healthy after every change. | `docker-compose.yml`, `init_db.py`, `settings.py` |
-
-
-| 10 | 🧪 **Test-Tina QA** | `@tina` | ▶️ Start | Last gate before "done." Runs tests, checks Docker health, reads logs, validates financial math. Always shows the exact command she ran and its output. Nothing is declared done without her sign-off. | `tests/`, Docker logs |
-
-
-| 11 | 📊 **CrossX Analyst** | `@crossx` | ▶️ Start | Financial truth machine. Runs SQL queries to measure win rates, P&L, and signal accuracy. Audits algorithm correctness (Max Pain, PCR, Greeks). Never modifies code — only reports. | DB queries, `nse_data_provider.py` |
-
-
-| 12 | 👑 **Omega Auditor** | `@omega` | 💬 Interactive Plan | **RUN THIS FOR PROJECT HEALTH.** A macro-auditor acting as CTO. Reads the whole codebase to find architectural flaws, security risks, memory leaks, and strategic opportunities. Delivers a CEO-level Executive Report. | None — reads only |
-| 13 | 🔄 **@onboard Syncer** | `@onboard` | 💬 Interactive Plan | **USE THIS FOR NEW PROJECTS.** He scans the new project's folders and automatically updates the "References" in all other 14+ agent files so they are perfectly synchronized with the new code structure. | Updates ALL `.md` files |
+> [!NOTE]
+> **Specialized Subs**: There are 14+ additional Audit Agents located in [audit_agents/](file:///c:/Users/vamsh/Desktop/jules%20agents%20personas/jewels_agents/audit_agents/) for deep-dive logic verification (e.g., `pt_auditor`, `risk_auditor`).
 
 ---
 
@@ -55,28 +35,24 @@
 
 ---
 
-## 👥 Agent Categories
+## 🔄 The "Boston Pass" Loop (v2.1)
 
-### 🔍 Research & Discovery (No Code, No Review)
-- **Omega** — Full system CTO. Finds cross-module bugs, architectural flaws, and strategic epics
-- **Nova** — Finds gaps and innovations in existing modules proactively
-- **CrossX** — Audits financial algorithm accuracy and signal performance
+1.  **Orientation (Rule 0)**: Agent wakes up -> Reads `.jao/project_map.md` & `.jao/task_board.md`.
+2.  **Execution**: Agent performs their specific role tasks.
+3.  **Register**: Agent adds any new files discovered to `.jao/project_map.md`.
+4.  **Assign**: Agent marks their task `[x]` and assigns the next agent in `.jao/task_board.md`.
+5.  **Handoff**: Agent mentions the mission is ready for the next session.
 
-### 📋 Planning & Translation (No Code Written)
-- **Priya** — Translates your plain English into expert prompts to START a task
-- **Rex** — Translates agent questions into expert replies MID-TASK
-- **Ron** — Translates Jules PRs into simple Approve/Change/Close actions for GitHub
-- **Ada** — Evaluates ideas, hunts free resources, writes blueprints
-- **Vera** — Reviews plans for safety before anyone writes code
+---
 
-### 🔨 Developers (Write & Commit Code)
-- **Py-Dan** — All Python/FastAPI backend code *(most critical)*
-- **React-Rita** — All React/JSX/CSS frontend code
-- **Ops-Oliver** — Docker, DB schema, deployment infrastructure
-- **@onboard** — Project Portability, Path Synchronization, and Auditor Re-purposing
+### Agent Categories (Expanded Firm)
 
-### ✅ Quality Gate
-- **Test-Tina** — Tests everything, signs off deployment
+-   **Orchestration**: `@syncer`, `@onboard`
+-   **Architects**: `@ada`, `@vera`, `@omega`
+-   **Developers**: `@pydan`, `@rita`, `@oliver`
+-   **Quality**: `@tina`, `@ron`, `@test_sherlock`
+-   **Analysts**: `@nova`, `@crossx`, `@priya`, `@rex`
+-   **Auditors**: 14+ specialized module bots (Scalper, API, Risk, etc.)
 
 ---
 
@@ -182,16 +158,36 @@ User: "We are starting a new E-commerce project in this folder."
                   └─▶ @omega     → Performs initial CTO audit of the new project ✅
 ```
 
+## Workflow 7: Documentation & Reality Sync
+```
+User: "Verify that blueprints match the actual code."
+ └─▶ @ada       → Reads Blueprints + Project Map → Creates Sync Plan
+      └─▶ @blueprint_auditor → Forensic comparison of Code vs. Markdown
+            └─▶ @ada     → Updates Blueprints (if Doc-Rot) or assigned Gaps (if missing features)
+                  └─▶ @vera    → Certifies the alignment plan
+                        └─▶ @pydan / @rita → Technical Execution (if needed) ✅
+```
+
 ---
 
 ## 🔑 Golden Rules (Never Break These)
-1. **Start with Priya** when unsure what to say or which agent to use
-2. **Start with Nova** when you want to discover gaps or innovations proactively
-3. **Vera approves before any developer writes code** — no exceptions
-4. **Oliver runs DB migrations first** — backend second — frontend last
-5. **Tina is always last** — nothing is "done" until she signs off
-6. **Py-Dan and Rita work in parallel** once Vera approves and DB is ready
+1. **Loud Intake, Silent Fleet**: Only `@priya` talks to the user. All others work in silence.
+2. **Zero-User Interaction**: Once the mission is in the fleet, don't ask for permission.
+3. **Start with @onboard** when moving to a new project folder to initialize the ground.
+4. **Vera approves before any developer writes code** — no exceptions
+5. **Oliver runs DB migrations first** — backend second — frontend last
+6. **Tina is always last** — nothing is "done" until she signs off
 7. **CrossX and Nova are independent** — call them anytime, they don't block others
+
+---
+
+## 📢 Communication Protocol: "Loud Intake, Silent Fleet"
+
+To ensure maximum focus and zero distractions, individual agent communication is restricted:
+
+1.  **The Client Liaison (@priya)**: The ONLY agent authorized to talk back to the user. She is the requirement gatekeeper. She brainstorms, challenges, and confirms.
+2.  **The Silent Fleet (30+ Agents)**: All other developers, auditors, and quality agents are forbidden from greeting or chatting with the user. They communicate via the `.jao/` layer and baton-passes only.
+3.  **Autonomous Resolution**: If a silent agent hits a blocker, they do not ask the user; they update the `task_board.md` and pass to `@priya` or `@omega` to resolve.
 
 ---
 

@@ -9,9 +9,10 @@ You are the Lead Architect for the JAO Hyper-Autonomous Layer. Your objective is
 1. **Backend**: Implement a FastAPI webhook handler at `/api/v1/github/webhook`.
 2. **Logic**: Configure it to listen for `pull_request` events.
 3. **Automation**: When a PR is detected, automatically spawn a workflow:
-   - `@sherlock` -> Analyze for conflicts/bugs.
+   - `@test_sherlock` -> Analyze for conflicts/bugs.
    - `@pydan` -> Fix conflicts if found.
-   - `@omega` -> Final audit.
+   - `@vera` -> Final audit.
+   - *Requirement*: Every session MUST start with **Rule 0 Orientation** reading `.jao/project_map.md`.
 
 ## 🧠 Part 2: The Brainstorming Idle-Loop
 1. **Backend**: Implement a background task (using `asyncio` or `APScheduler`) that checks for system idleness.
@@ -20,12 +21,12 @@ You are the Lead Architect for the JAO Hyper-Autonomous Layer. Your objective is
 4. **UI**: Add a "Proposals" tab to the frontend where the user (or @ada) can "Approve" an idea to turn it into a live task.
 
 ## 📜 Part 3: Persistent Session Tracking & Reply Logic
-1. **DB Enhancement**: Add a `workflow_runs` table columns: `expires_at`, `permission_status`, and `reply_payload`.
-2. **Reply Mechanism**: Create a route `POST /api/v1/agents/reply` that allows an agent to send a prompt directly to another agent's future session.
-3. **Auto-Cleanup**: Implement a "Reaper" function that runs every 5 minutes to delete any Jules sessions marked as `EXPIRED` or `COMPLETED`.
+1. **DB Enhancement**: Add a `workflow_runs` table columns: `last_lpc_sync`, `permission_status`, and `task_id`.
+2. **Reply Mechanism**: Create a route `POST /api/v1/agents/reply` that updates the `next_steps` column in `.jao/task_board.md`.
+3. **Auto-Cleanup**: Implement a "Reaper" function that runs every 5 minutes to delete any Jules sessions marked as `COMPLETED` in the Task Board.
 
 ## 🛠️ Part 4: Building & "Ground" Verification
-1. **Onboard Evolution**: Ensure the `@onboard` agent runs automatically before ANY GitHub-triggered session to verify the file structure hasn't changed.
+1. **Onboard Evolution**: Ensure the `@onboard` agent runs automatically before ANY GitHub-triggered session to verify the `.jao/` directory is current.
 2. **Health Monitoring**: The backend should monitor the local Docker containers. If they crash, assign the "Self-Repair" task to the `@ops` agent.
 
 ---

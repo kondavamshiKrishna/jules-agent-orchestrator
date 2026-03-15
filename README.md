@@ -11,15 +11,13 @@ JAO is not a tool; it is a **Self-Healing AI Firm**. The project goal is 100% au
 
 ## 🚀 100% Feature Roadmap
 - **🏗️ Recursive Orchestration**: Agents automatically hand over tasks and transfer persistent technical context.
-- **🛡️ Self-Healing Loop**: Continuous auditing cycles that refuse to stop## 🚀 Quick Start (Manual Orchestration)
+## 🚀 Quick Start (Manual Orchestration)
 
-While we build the autonomous core, you can run the firm manually following the **Baton-Pass Protocol**. 
-
-1. **Step-by-Step Guide**: See [JAO/PROTOCOLS/MANUAL_BRIDGE.md](file:///c:/Users/vamsh/Desktop/jules%20agents%20personas/jewels_agents/JAO/PROTOCOLS/MANUAL_BRIDGE.md).
-2. **Workflow**: `Ada (A) -> Priya (B) -> Developer (C) -> Tina (D) -> Vera (E)`.
-3. **Persistence**: Every agent writes to the `JAO/sessions/` folder to ensure your work is never lost.
-- **🏢 Dynamic Firm Scaling**: Support for up to 15+ simultaneous agent sessions with automated resource management.
-- **🔄 Universal Portability**: The `@onboard` Captain ensures the entire team can move grounds (projects) instantly.
+To run the firm on any project:
+1. **Initialize Ground**: Run `@onboard` to scan the repository and build the `.jao/` layer.
+2. **Check Missons**: Read `.jao/task_board.md` to see what's pending.
+3. **Trigger Workflow**: Run `@syncer` to identify the next agent for the current task.
+4. **Follow the Bridge**: See [MANUAL_BRIDGE.md](file:///c:/Users/vamsh/Desktop/jules%20agents%20personas/jewels_agents/MANUAL_BRIDGE.md) for session sequencing.
 
 ## 🛠️ Technology Stack
 - **Engine**: FastAPI, Jules SDK, Python 3.11
@@ -29,13 +27,12 @@ While we build the autonomous core, you can run the firm manually following the 
 
 ## 📁 Repository Structure
 ```text
-├── blueprints/          # Deep technical design documents
-├── audit_agents/        # specialized module auditors (The Subs)
-├── MASTER_PLAN.md       # The High-Level Agent Registry
-├── SYSTEM_ARCHITECTURE.md # Technical Data Flow & Logic
-└── JAO/                 # The Application Source Code
-    ├── backend/         # FastAPI & Orchestration Engine
-    └── frontend/        # React Monitoring Dashboard
+├── .jao/                # Live Project Context (Project Map & Task Board)
+├── blueprints/          # Static design blueprints and specs
+├── audit_agents/        # 14+ specialized logic auditors
+├── MASTER_PLAN.md       # Full Agent Roster & Roles
+├── MANUAL_BRIDGE.md     # Guide for manual session sequencing
+└── JAO/                 # Application Source Code
 ```
 
 ## 🤝 Contributing

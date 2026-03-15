@@ -37,14 +37,14 @@ Implement the 100% architecture defined in `SYSTEM_ARCHITECTURE.md`. This includ
 ---
 
 ## 🔄 Phase 3: Robust Orchestration & Lifecycle
-1. **The Handover Engine**:
-   - Refine `services/orchestrator.py` to support **Context Injection**. When switching agents, the summarized output of the previous session MUST be the preamble for the next session's prompt.
-2. **The Self-Cleaning Loop**:
-   - Update `routes/workflows.py`. Every time a session completes:
+1. **The Boston Pass Engine**:
+   - Refine `services/orchestrator.py` to support **LPC Orientation**. Agents MUST read `.jao/project_map.md` to identify their target files dynamically.
+2. **Master Orchestrator (@syncer)**:
+   - Implement the syncer logic to manage the `task_board.md` and prepare the "Baton" for the next agent.
+3. **The Self-Cleaning Loop**:
+   - Update `routes/workflows.py`. Every time a session completes (marked in the task board):
      - Log activities to `workflow_runs`.
      - **CRITICAL**: Call `client.sessions.delete(session_id)` immediately to clean up Jules resources.
-3. **The Autonomous Audit Cycle**:
-   - If the current agent is a Construction agent (@pydan/@rita) and they finish, automatically trigger the @ada (System Architect) for a review session.
 
 ---
 

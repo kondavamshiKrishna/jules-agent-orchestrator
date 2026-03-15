@@ -24,15 +24,17 @@ Every agent in the firm is aware of its teammates. They do not just "work alone"
 - **@pydan**: The Backend Developer (Python, FastAPI, SQL)
 - **@rita**: The Frontend Developer (React, Tailwind, UI/UX)
 - **@tina**: The QA Engineer (Testing, Docker, Validation)
-- **@vera**: The Verifier (Security Audit, Final Sign-off, Merge)
-- **@oliver**: The DevOps Lead (CI/CD, Infrastructure)
+- `@vera`: The Verifier (Security Audit, Final Sign-off, Mission Completion)
+- `@oliver`: The DevOps Lead (CI/CD, Infrastructure)
+- `@syncer`: The Master Orchestrator (Session Sequencing & Task Board Management)
 
-#### 🔍 The "Auto-Scan" Bootstrap Protocol:
-When an agent starts, its **First Act** is to scan the project:
-1.  **Check `JAO/sessions/`**: Look for any `.md` file that mentions their tag (e.g., `@rita`) but is not marked as `[STATUS: RESOLVED]`.
-2.  **Transition to `[STATUS: IN_PROGRESS]`**: Immediately update the file to signal work has begun.
-3.  **Execute**: Perform the task based on the contents of the last sequence file.
-4.  **Handoff**: Write a new sequence file, mention the next agent (e.g., `@tina`), and mark your portion as `[STATUS: RESOLVED]`.
+#### 🔍 The "Boston Pass" Orientation Protocol:
+Every agent follows **Rule 0 (Orientation)** to identify their workspace:
+1.  **Read [.jao/project_map.md](file:///.jao/project_map.md)**: Find role-specific file paths.
+2.  **Read [.jao/task_board.md](file:///.jao/task_board.md)**: Identify the current mission and the "Baton-Pass" holder.
+3.  **Execute**: Perform specialized tasks.
+4.  **Write-Back**: Register new files in the Project Map and assign the *next* agent in the Task Board.
+5.  **Handoff**: Mention the successor agent to complete the Boston Pass.
 
 #### Infrastructure: The Event-Driven Loop
 Instead of waiting for a user, the **JAO Backend** acts as a "Mission Control":
@@ -66,9 +68,10 @@ When no active tasks are in the queue, the Orchestrator does not sleep. It enter
 ### 🛡️ 4. The "Immutable Core Prompt" Philosophy
 Traditionally, users write a new prompt for every task. In the JAO architecture, **you never write a prompt twice**.
 
-- **The Core DNA**: The agent's persona file (e.g., `rita_frontend.md`) is its "Immutable DNA." It contains her skills, her team awareness, and her "First Act" (scanning).
-- **The Task Document**: The specific work instructions (e.g., "Add a button") are stored in a **Dynamic Task Document** in the `sessions/` folder.
-- **The Activation**: You simply run the "Core DNA". The agent wakes up, scans the folder, finds their tag (`@rita`), and "self-instantiates" their specific mission for that day.
+- **The Core DNA**: The agent's persona file (e.g., `rita_frontend.md`) contains her skills and the mandatory **Rule 0 (Orientation)**.
+- **The Live Project Context (LPC)**: The project's structure is defined in `.jao/project_map.md`.
+- **The Mission Control**: Detailed work instructions and agent sequencing are stored in `.jao/task_board.md`.
+- **The Activation**: `@syncer` reads the board and prepares the activation prompt for the next agent, ensuring perfect context continuity.
 
 #### Advantages:
 1. **Zero Prompt Decay**: No more copy-pasting long instructions.

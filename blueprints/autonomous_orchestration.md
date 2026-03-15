@@ -13,18 +13,18 @@ We are transitioning from "Single Agent Calls" to a "Dynamic Firm" where agents 
 ### 🏗️ 2. The Asynchronous "Handover Handshake"
 Because agents work in ephemeral PRs, they must leave a "Baton" for the next agent.
 
-#### Standard: The `handover.md` Protocol
-Every agent MUST conclude their session by writing a `handover.md` file to the workspace. This file contains:
-- **`[CURRENT_TASK_STATUS]`**: Summary of what was done.
-- **`[REMAINING_BLOCKERS]`**: What is still broken.
-- **`[NEXT_ACTION_REQUIRED]`**: Clear instruction for the next agent.
-- **`[TARGET_AGENT]`**: The tag of the agent who should pick this up next.
+#### Standard: The ".jao/task_board.md" Protocol
+Every agent MUST conclude their session by updating the Task Board:
+- **`[x]` / `[ ]`**: Update task completion status.
+- **Baton Holder**: Assign the next agent (e.g., `@rita`) in the ledger.
+- **Handoff Notes**: Provide clear instructions for the successor within the board.
+- **Project Map**: If new files were created, register them in `.jao/project_map.md`.
 
 #### Infrastructure: The Event-Driven Trigger
 The JAO Orchestrator monitors GitHub via Webhooks.
-1. `push` event detected -> Orchestrator scans changes for `handover.md`.
-2. Orchestrator updates `JAO/state/active_workflows.json`.
-3. Orchestrator triggers Jules API to spawn the `next_agent`.
+1. `push` event detected -> Orchestrator scans `.jao/task_board.md` for new tasks.
+2. Orchestrator updates the backend state ledger.
+3. Orchestrator triggers `@syncer` to prepare the handoff for the next session.
 
 ### 3. The "Fielding" System (Spare Parts)
 - **Concept**: Not every agent needs to be on the field at once.
@@ -41,5 +41,5 @@ The JAO Orchestrator monitors GitHub via Webhooks.
     3. Transfers the "Context Summary" from the previous agent.
 
 ### 4. Orchestrator-on-Top
-- A dedicated "Firm Manager" agent monitors the entire board.
-- It identifies if an agent is "Stuck" (e.g., looping on a bug) and can forcibly swap them for `@sherlock` (testing/debug specialist).
+- `@syncer` monitors the entire board across all repositories.
+- It identifies if an agent is "Stuck" (e.g., repeating the same task in `.jao/task_board.md`) and can forcibly swap them for `@test_sherlock`.
