@@ -1,22 +1,23 @@
 # 📋 JAO Task Board (Persistent Project State)
-*This file tracks the "Live Memory" of the project across agent sessions. Agents MUST update this before signing off.*
 
-## 🚦 Global Status: [STATUS: BOOTSTRAPPING]
-**Current Objective**: Building the Core Orchestrator Engine and LPC Layer.
+## 🎯 Current Mission
+Initialize the project structure and build the **Phase 1: Settings Layer**.
 
-## 📝 Pending Handovers
-- **From @antigravity (System)**: 
-    - [ ] Initialize `TASK_BOARD.md` with current state.
-    - [ ] Update all agent personas to use LPC Layer.
-    - [ ] First task for `@ada` in `JAO/sessions/PHASE1_ENGINE/inbox/`.
+## 🚦 Global Status: [STATUS: ARCHITECTED]
+**Current Objective**: Synthesizing the production prompt for the Settings Layer and Agent Registry.
+
+## 📝 Active Tasks
+- [x] **@onboard**: Bootstrap project map and identify tech stack. (SUCCESS)
+- [x] **@ada**: Design Production Spec and Hyper-Autonomous Blueprint. (SUCCESS)
+- [/] **@priya**: Synthesize the Developer Prompt for "Phase 1: Settings Layer". (NEXT)
+- [ ] **@pydan**: Implement Settings Table and API Routes.
+- [ ] **@rita**: Implement Frontend Settings Page.
 
 ## 🧠 Cross-Agent Memory (Blackboard)
-*Agents: Add critical notes here that aren't in blueprints.*
+- **Note from @antigravity**: The `asyncpg` import in `database.py` is a blocking lint error. `@oliver` needs to resolve this during Phase 1.
+- **Protocol**: Follow the A -> B -> C -> D sequence defined in `JAO/PROTOCOLS/MANUAL_BRIDGE.md`.
 
-- **Note from @antigravity**: The `asyncpg` import in `database.py` is currently a lint error. `@oliver` needs to verify the environment.
-- **Note from @antigravity**: The `JAO/sessions/` folder is the source of truth for active work.
-
-## 📅 Roadmap (Granular)
-1. **LPC Layer**: Initialize Map and Board. (In Progress)
-2. **Core Engine**: `@ada` to design the watcher logic.
-3. **Session Management**: `@pydan` to implement DB persistence for sessions.
+## 📅 Roadmap
+1. **LPC-Sync**: Consolidate Knowledge layer. (COMPLETED)
+2. **Phase 1**: Settings & Registry. (IN PROGRESS)
+3. **Phase 2**: Autonomous Watcher Logic. (PLANNED)
