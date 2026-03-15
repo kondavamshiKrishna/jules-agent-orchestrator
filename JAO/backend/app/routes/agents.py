@@ -3,6 +3,7 @@ import glob
 from fastapi import APIRouter
 from app.models.api import AgentPersona
 from typing import List
+from functools import lru_cache
 
 router = APIRouter()
 
@@ -36,9 +37,8 @@ def _load_personas_from_dir(
     return personas
 
 
-@router.get("/", response_model=List[AgentPersona])
-def list_agents():
-    """Reads all .md files in the jewels_agents directory and returns them as available personas."""
+@lru_cache(maxsize=1)
+def get_all_agents() -> List[AgentPersona]:
     personas = []
 
     # Read main agents
@@ -52,3 +52,9 @@ def list_agents():
     personas.extend(_load_personas_from_dir(AUDIT_AGENTS_DIR, "Audit agent"))
 
     return personas
+
+
+@router.get("/", response_model=List[AgentPersona])
+def list_agents():
+    """Reads all .md files in the jewels_agents directory and returns them as available personas."""
+    return get_all_agents()
