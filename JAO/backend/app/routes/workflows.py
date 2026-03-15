@@ -78,12 +78,24 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
         
         # 1. Load the persona from the .md file
         try:
-            persona_path = os.path.join(AGENTS_DIR, f"{current_agent}.md")
+            # Sanitize the input by taking only the basename to prevent directory traversal
+            safe_agent = os.path.basename(current_agent)
+            if safe_agent != current_agent or ".." in current_agent:
+                raise ValueError("Invalid agent identifier.")
+
+            persona_path = os.path.join(AGENTS_DIR, f"{safe_agent}.md")
             if not os.path.exists(persona_path):
                 # Check audit_agents folder
-                persona_path = os.path.join(AGENTS_DIR, "audit_agents", f"{current_agent}.md")
+                persona_path = os.path.join(AGENTS_DIR, "audit_agents", f"{safe_agent}.md")
+
+            # Double-check that the resolved path is within AGENTS_DIR
+            abs_persona_path = os.path.abspath(persona_path)
+            abs_agents_dir = os.path.abspath(AGENTS_DIR)
+
+            if not abs_persona_path.startswith(abs_agents_dir + os.sep):
+                raise ValueError("Path traversal attempt detected.")
             
-            with open(persona_path, "r", encoding="utf-8") as f:
+            with open(abs_persona_path, "r", encoding="utf-8") as f:
                 persona_content = f.read()
         except Exception as e:
             persona_content = f"Error loading persona: {e}"
