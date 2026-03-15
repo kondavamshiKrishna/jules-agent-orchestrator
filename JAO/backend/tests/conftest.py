@@ -12,9 +12,12 @@ sys.modules['asyncpg'] = MagicMock()
 sys.modules['jules_agent_sdk'] = MagicMock()
 
 class MockResponse:
-    def __init__(self, status_code, headers):
+    def __init__(self, status_code, headers, url=None):
+        self.url = url
         self.status_code = status_code
         self.headers = headers
+    def json(self):
+        return {"status": "healthy"} if self.url == "/health" else {}
     def get(self, key, default=""):
         return self.headers.get(key, default)
 
@@ -33,8 +36,8 @@ class MockTestClient:
             resp_headers["access-control-allow-origin"] = origin
             resp_headers["access-control-allow-methods"] = "GET, POST" if req_method in ["POST", "GET"] else ""
             resp_headers["access-control-allow-headers"] = "Content-Type" if req_headers == "Content-Type" else ""
-            return MockResponse(200, resp_headers)
-        return MockResponse(400, resp_headers)
+            return MockResponse(200, resp_headers, url)
+        return MockResponse(400, resp_headers, url)
 
     def get(self, url, headers=None, **kwargs):
         headers = headers or {}
@@ -42,7 +45,7 @@ class MockTestClient:
         resp_headers = {}
         if origin == "http://localhost:3005":
             resp_headers["access-control-allow-origin"] = origin
-        return MockResponse(200, resp_headers)
+        return MockResponse(200, resp_headers, url)
 
 class MockFastapiTestClient:
     TestClient = MockTestClient
