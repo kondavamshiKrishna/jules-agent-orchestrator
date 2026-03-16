@@ -17,7 +17,7 @@ class JulesService:
             from jules_agent_sdk import JulesClient
             self.client = JulesClient(api_key=self.api_key)
         except Exception as e:
-            logger.exception("Failed to instantiate SDK")
+            logger.exception("Failed to instantiate SDK: %s", e)
             self.client = None
             
     def test_connection(self):
@@ -29,7 +29,7 @@ class JulesService:
             # to preserve existing (placeholder) logic but with better error handling.
             return True
         except Exception as e:
-            logger.exception("Connection test failed")
+            logger.exception("Connection test failed: %s", e)
             return False
 
     def create_session(self, prompt: str, source: str, title: str, require_plan_approval: bool):
@@ -47,7 +47,7 @@ class JulesService:
             )
             return session
         except Exception as e:
-            logger.exception("Failed to create session")
+            logger.exception("Failed to create session: %s", e)
             return {"error": str(e)}
 
     def list_activities(self, session_id: str):
@@ -57,7 +57,7 @@ class JulesService:
         try:
             return self.client.activities.list_all(session_id)
         except Exception as e:
-            logger.exception("Failed to list activities")
+            logger.exception("Failed to list activities: %s", e)
             return []
             
     def approve_plan(self, session_id: str):
@@ -67,7 +67,7 @@ class JulesService:
              self.client.sessions.approve_plan(session_id)
              return True
         except Exception as e:
-             logger.exception("Failed to approve plan")
+             logger.exception("Failed to approve plan: %s", e)
              return False
 
 # In a real app we'd load this from an env variable or DB.
