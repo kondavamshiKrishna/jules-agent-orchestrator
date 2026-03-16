@@ -1,0 +1,10 @@
+🎯 What:
+Added proper `logger.exception()` logging inside the `except Exception` block in `JAO/backend/app/routes/workflows.py` when handling persona loading errors, including path traversal detection.
+
+⚠️ Risk:
+While the path traversal attack was previously mitigated using `os.path.basename` and bounds checking, the exception handling failed to use the project's standard `logging` conventions. Failing to log these security exceptions means that attempted attacks or system misconfigurations might go unnoticed by operations and security teams.
+
+🛡️ Solution:
+- Imported the standard Python `logging` module.
+- Initialized `logger = logging.getLogger(__name__)`.
+- Added `logger.exception(f"Error loading persona: {e}")` to ensure that full stack traces and exception details are properly recorded when an invalid agent identifier or path traversal is detected.

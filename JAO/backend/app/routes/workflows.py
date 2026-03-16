@@ -1,4 +1,7 @@
 from fastapi import APIRouter
+import logging
+
+logger = logging.getLogger(__name__)
 from pydantic import BaseModel
 import uuid
 import asyncio
@@ -103,6 +106,7 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
             
             persona_content = await asyncio.to_thread(_read_file_sync, abs_persona_path)
         except Exception as e:
+            logger.exception(f"Error loading persona: {e}")
             persona_content = f"Error loading persona: {e}"
             
         full_prompt = f"IDENTITY:\n{persona_content}\n\nTASK:\n{current_prompt}"
