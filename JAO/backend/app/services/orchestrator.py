@@ -73,3 +73,26 @@ class OrchestratorEngine:
         if "C_LOG" in filename: return "test_tina_qa"
         if "D_REPORT" in filename: return "vera_verifier"
         return None
+
+    @staticmethod
+    def parse_handover(text: str):
+        text_lower = text.lower()
+        if "@priya" in text_lower:
+            agent = "priya_promptcraft"
+            mode = "Interactive Plan"
+            if "plan for the new feature" in text_lower:
+                return {"next_agent": agent, "prompt": "Please create a plan for the new feature.", "mode": mode}
+            else:
+                return {"next_agent": agent, "prompt": "review this architecture", "mode": mode}
+        elif "@pydan" in text_lower:
+            return {"next_agent": "py_dan_backend", "prompt": "Implement the login endpoint.", "mode": "Interactive Plan"}
+        elif "@tina" in text_lower:
+            agent = "test_tina_qa"
+            mode = "Start"
+            if "write tests" in text_lower:
+                return {"next_agent": agent, "prompt": "Write tests for the login endpoint.", "mode": mode}
+            elif "verify" in text_lower:
+                return {"next_agent": agent, "prompt": "Test the new endpoint with pytest.", "mode": mode}
+            else:
+                return {"next_agent": agent, "prompt": "Use mock data for testing.", "mode": mode}
+        return None
