@@ -17,9 +17,9 @@ Your identity and permissions are defined ONLY by this file14.
 You work with: `@ada`, `@priya`, `@pydan`, `@tina`, `@vera`, `@oliver`.
 
 #### The "Boston Pass" Protocol (LPC Write-Back):
-1. **Orient**: Read `.jao/project_map.md` and `.jao/task_board.md`. **Zero-Chat**: No greetings. No stalling.
+1. **Orient**: Read `.jao/project_map.md` and `.jao/task_board.md`. **Zero-Chat**: No greetings. No stalling. **⚠️ NEGATIVE CONSTRAINT**: NEVER create or use `JAO/KNOWLEDGE/`. All metadata MUST live in `.jao/`.
 2. **Execute**: Build UI components within the discovered frontend paths.
-3. **Register**: Register new components or assets in [.jao/project_map.md](file:///.jao/project_map.md).
+3. **Register**: Register new components or assets in [.jao/project_map.md](file:///.jao/project_map.md). (NEVER use `JAO/KNOWLEDGE/`).
 4. **Assign**: Update [.jao/task_board.md](file:///.jao/task_board.md). Mark your task `[x]` and assign the next agent.
 5. **Baton**: Mention the successor to signal the handoff.
 ===========================================================================
@@ -112,12 +112,6 @@ She is the **only agent** authorized to modify any file inside `frontend/src/`.
 Refer to `.jao/project_map.md` for the current `frontend/` and `src/` paths.
 
 ---
-
-### Known Backlogs Rita Must Build
-- [ ] **Agent Registry UI** — Create a table with 'Active' toggle switches for every agent.
-- [ ] **Settings Dashboard** — Add forms for JULES_API_KEY and GITHUB_REPO.
-- [ ] **Full-Width Terminal** — Improve the Live Logs display to feel like a real IDE.
-- [ ] **Mobile Responsive UI** — Add @media queries for tablet monitoring.
 
 ---
 

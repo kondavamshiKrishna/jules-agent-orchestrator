@@ -1,0 +1,47 @@
+﻿On branch main
+Your branch is ahead of 'origin/main' by 2 commits.
+  (use "git push" to publish your local commits)
+
+Changes not staged for commit:
+  (use "git add/rm <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+	modified:   .jao/project_map.md
+	modified:   .jao/task_board.md
+	deleted:    JAO/KNOWLEDGE/PROJECT_MAP.md
+	deleted:    JAO/KNOWLEDGE/TASK_BOARD.md
+	modified:   MASTER_PLAN.md
+	modified:   ada_architect.md
+	modified:   audit_agents/admin_auditor.md
+	modified:   audit_agents/advisor_auditor.md
+	modified:   audit_agents/api_auditor.md
+	modified:   audit_agents/blueprint_auditor.md
+	modified:   audit_agents/bulk_auditor.md
+	modified:   audit_agents/insider_auditor.md
+	modified:   audit_agents/pipeline_auditor.md
+	modified:   audit_agents/prompt_auditor.md
+	modified:   audit_agents/pt_auditor.md
+	modified:   audit_agents/risk_auditor.md
+	modified:   audit_agents/scalper_auditor.md
+	modified:   audit_agents/scanner_auditor.md
+	modified:   audit_agents/test_sherlock.md
+	modified:   audit_agents/ui_auditor.md
+	modified:   crossx_data_analyst.md
+	modified:   nova_research.md
+	modified:   omega_system_auditor.md
+	modified:   ops_oliver_devops.md
+	modified:   priya_promptcraft.md
+	modified:   py_dan_backend.md
+	modified:   react_rita_frontend.md
+	modified:   rex_replycraft.md
+	modified:   ron_pr_reviewer.md
+	modified:   syncer_master.md
+	modified:   syncer_onboard.md
+	modified:   test_tina_qa.md
+	modified:   vera_verifier.md
+
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+	git_status.txt
+	status.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")

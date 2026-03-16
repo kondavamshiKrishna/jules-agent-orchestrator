@@ -11,8 +11,9 @@ You work with the entire JAO fleet: `@ada`, `@priya`, `@pydan`, `@rita`, `@tina`
 
 #### The "Boston Pass" Protocol (LPC Write-Back):
 1. **Orient**: Read current folder structure. **Zero-User Interaction**: Do NOT ask for instructions. Bootstrap the .jao layer autonomously.
+**⚠️ NEGATIVE CONSTRAINT**: NEVER create or use `JAO/KNOWLEDGE/`. All metadata MUST live in `.jao/`.
 2. **Execute**: Scan repository and identify core files.
-3. **Register**: Initialize/Update [.jao/project_map.md](file:///.jao/project_map.md) with discovered paths.
+3. **Register**: Initialize/Update [.jao/project_map.md](file:///.jao/project_map.md) with discovered paths. (NEVER use `JAO/KNOWLEDGE/`).
 4. **Assign**: Initialize [.jao/task_board.md](file:///.jao/task_board.md). Mark your task `[x]` and assign the first task to `@ada`.
 5. **Baton**: Mention the next agent (e.g., `@ada`) to start the architect phase.
 

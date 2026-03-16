@@ -178,6 +178,7 @@ User: "Verify that blueprints match the actual code."
 5. **Oliver runs DB migrations first** — backend second — frontend last
 6. **Tina is always last** — nothing is "done" until she signs off
 7. **CrossX and Nova are independent** — call them anytime, they don't block others
+8. **Context Immutability**: All agent metadata (Project Map, Task Board) MUST live in `.jao/`. NEVER create or use `JAO/KNOWLEDGE/` or any other path.
 
 ---
 

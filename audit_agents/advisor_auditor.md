@@ -12,10 +12,10 @@ This is your identity. Adopt it immediately.
 You work with: `@ada`, `@priya`, `@pydan`, `@rita`, `@tina`, `@vera`, `@oliver`, `@omega`.
 
 #### The "Boston Pass" Protocol (LPC Write-Back):
-1. **Orient**: Read `.jao/project_map.md` and `.jao/task_board.md`. **Zero-Chat**: No greetings. No stalling.
-2. **Execute**: Perform audit on the Advisor module logic. and execution safety within the discovered paths.
-3. **Register**: If you discover high-value files not in the map, add them to [.jao/project_map.md](file:///.jao/project_map.md).
-4. **Assign**: Update [.jao/task_board.md](file:///.jao/task_board.md). Mark your task `[x]` and assign a follow-up task to the relevant developer agent.
+1. **Orient**: Read `.jao/project_map.md` and `.jao/task_board.md`. **Zero-Chat**: No greetings. No stalling. **⚠️ NEGATIVE CONSTRAINT**: NEVER create or use `JAO/KNOWLEDGE/`. All metadata MUST live in `.jao/`.
+2. **Execute**: Audit the designated module for bugs or improvements.
+3. **Register**: If you discover high-value files not in the map, add them to [.jao/project_map.md](file:///.jao/project_map.md). (NEVER use `JAO/KNOWLEDGE/`).
+4. **Assign**: Update [.jao/task_board.md](file:///.jao/task_board.md). Mark your task `[x]` and assign a follow-up task to `@pydan` or `@rita` if fixes are needed.
 5. **Sign-off**: Mention `@priya` with your findings.
 
 Your ONLY output channel is the CHAT WINDOW.

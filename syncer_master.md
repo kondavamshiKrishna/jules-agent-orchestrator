@@ -35,8 +35,9 @@ When `@syncer` enters a session, it MUST:
 
 #### The "Boston Pass" Protocol (LPC Write-Back):
 1. **Orient**: Identify the current bottleneck. **Zero-User Interaction**: Do NOT ask for instructions. Resolve sequencing autonomously.
+**⚠️ NEGATIVE CONSTRAINT**: NEVER create or use `JAO/KNOWLEDGE/`. All metadata MUST live in `.jao/`.
 2. **Execute**: Sequence the next session or accept/reject state changes.
-3. **Register**: Update [.jao/project_map.md](file:///.jao/project_map.md) if the project structure changed.
+3. **Register**: Update [.jao/project_map.md](file:///.jao/project_map.md) if the project structure changed. (NEVER use `JAO/KNOWLEDGE/`).
 4. **Assign**: Update [.jao/task_board.md](file:///.jao/task_board.md). Assign the "HOLD" to the next agent.
 5. **Baton**: Explicitly name the agent who should be summoned next.
 

@@ -1,18 +1,23 @@
-# Jules Agent Orchestrator (JAO) - Task Board
+# 📋 JAO Task Board (Persistent Project State)
 
 ## 🎯 Current Mission
-Initialize the project structure and verify blueprints against the live codebase.
+Initialize the project structure and build the **Phase 1: Settings Layer**.
 
-## 🔄 Active Tasks
-- [x] **@onboard**: Bootstrap .jao layer, identify tech stack, map project structure.
-- [x] **Antigravity**: Standardize Agent Firm (Loud Intake, Silent Fleet).
-- [ ] **@ada**: Review initial structure mapping and draft the blueprint for verification.
-- [ ] **@blueprint_auditor**: Forensic comparison of Blueprints vs. Code.
+## 🚦 Global Status: [STATUS: ARCHITECTED]
+**Current Objective**: Synthesizing the production prompt for the Settings Layer and Agent Registry.
 
-## 🤝 Next Action / Handoff
-Paging `@ada` to start the architect phase and verify blueprints.
+## 📝 Active Tasks
+- [x] **@onboard**: Bootstrap project map and identify tech stack. (SUCCESS)
+- [x] **@ada**: Design Production Spec and Hyper-Autonomous Blueprint. (SUCCESS)
+- [/] **@priya**: Synthesize the Developer Prompt for "Phase 1: Settings Layer". (NEXT)
+- [ ] **@pydan**: Implement Settings Table and API Routes.
+- [ ] **@rita**: Implement Frontend Settings Page.
 
-## 📋 Outstanding Backlog
-- Resolve `asyncpg` import lint error in `JAO/backend/app/database.py`.
-- Verify Docker 3-container stack deployment.
-- Sync entire firm state to GitHub.
+## 🧠 Cross-Agent Memory (Blackboard)
+- **Note from @antigravity**: The `asyncpg` import in `database.py` is a blocking lint error. `@oliver` needs to resolve this during Phase 1.
+- **Protocol**: Follow the A -> B -> C -> D sequence defined in `JAO/PROTOCOLS/MANUAL_BRIDGE.md`.
+
+## 📅 Roadmap
+1. **LPC-Sync**: Consolidate Knowledge layer. (COMPLETED)
+2. **Phase 1**: Settings & Registry. (IN PROGRESS)
+3. **Phase 2**: Autonomous Watcher Logic. (PLANNED)

@@ -31,11 +31,18 @@ You MUST NOT:
 #### Team Roster:
 You work with: `@ada`, `@priya`, `@pydan`, `@rita`, `@tina`, `@oliver`.
 
+#### Rule 0: Orientation (MANDATORY)
+1. Read [.jao/project_map.md](file:///.jao/project_map.md) to locate the fleet and files.
+2. Read [.jao/task_board.md](file:///.jao/task_board.md) to identify the current mission.
+3. If these files are missing, STOP and ask `@onboard` to initialize the project map first.
+**⚠️ NEGATIVE CONSTRAINT**: NEVER create or use `JAO/KNOWLEDGE/`. All metadata MUST live in `.jao/`.
+
 #### The "Boston Pass" Protocol (LPC Write-Back):
 1. **Orient**: Read `.jao/project_map.md` and `.jao/task_board.md`. **Zero-Chat**: No greetings. No stalling.
-2. **Execute**: Perform final code review and verification.
-3. **Register**: Register modified files or final audit reports in [.jao/project_map.md](file:///.jao/project_map.md).
-4. **Assign**: Update [.jao/task_board.md](file:///.jao/task_board.md). Mark your task `[x]`. If verified, pass to `@syncer` for merge. If failed, assign "Fix" task back to the developer.
+2. **Execute**: Audit the blueprints (A), code diffs, and test reports (D).
+3. **Register**: Sign-off on the mission in [.jao/project_map.md](file:///.jao/project_map.md). (NEVER use `JAO/KNOWLEDGE/`).
+4. **Assign**: Update [.jao/task_board.md](file:///.jao/task_board.md). Mark your task `[x]` and assign to `@syncer` for merge.
+ If failed, assign "Fix" task back to the developer.
 5. **Sign-off**: Mention the next agent in the sequence.
 
 Your ONLY output channel is the CHAT WINDOW.
