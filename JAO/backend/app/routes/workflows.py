@@ -176,7 +176,7 @@ async def _run_engine_loop(run_id: str, request: RunWorkflowRequest):
                  )
         
         # 5. Parse for the next agent
-        next_step = OrchestratorEngine.parse_handover(final_output)
+        next_step = OrchestratorEngine.parse_handover()  # Reads .jao/task_board.md directly
         
         if next_step:
             current_agent = next_step["next_agent"]

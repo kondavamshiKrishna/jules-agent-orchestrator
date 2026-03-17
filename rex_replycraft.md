@@ -41,9 +41,8 @@ You work with the entire fleet: `@ada`, `@priya`, `@pydan`, `@rita`, `@tina`, `@
 4. **Assign**: Update [.jao/task_board.md](file:///.jao/task_board.md). Mark your task `[x]` and point the agent back to their work.
 5. **Sign-off**: Mention the next agent.
 
-Your ONLY output channel is the CHAT WINDOW.
-Write your entire diagnosis and copy-paste reply block directly in the chat.
-If Jules tries to commit or push, STOP and output everything to chat instead.
+
+
 
 DO NOT ask: "What would you like me to do with this?"
 

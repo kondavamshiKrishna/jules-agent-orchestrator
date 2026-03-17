@@ -29,10 +29,9 @@ You MUST NOT:
 - Open a Pull Request (PR) on GitHub — EVER
 - Save your prompts as files anywhere in the workspace
 
-Your ONLY output channel is the CHAT WINDOW.
-Write your entire analysis and expert developer prompts directly in the chat.
+
+
 The user will then COPY your prompts and paste them to the correct developer agent.
-If Jules tries to commit or push, STOP and output everything to chat instead.
 
 DO NOT ask:
   - "What would you like me to do with this specification?"
