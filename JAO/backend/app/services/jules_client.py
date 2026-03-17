@@ -1,3 +1,4 @@
+import asyncio
 import os
 import logging
 
@@ -32,50 +33,52 @@ class JulesService:
             logger.exception("Connection test failed: %s", e)
             return False
 
-    def create_session(self, prompt: str, source: str, title: str, require_plan_approval: bool):
+    async def create_session(self, prompt: str, source: str, title: str, require_plan_approval: bool):
         """Creates a session in jules"""
         if not self.client:
             return {"id": "dummy_session_id", "status": "ACTIVE"}
         
         # Real SDK call (exact signature depends on alpha SDK version)
         try:
-            session = self.client.sessions.create(
-                prompt=prompt,
-                source=source,
-                title=title,
-                require_plan_approval=require_plan_approval
-            )
+            def _call_create():
+                return self.client.sessions.create(
+                    prompt=prompt,
+                    source=source,
+                    title=title,
+                    require_plan_approval=require_plan_approval
+                )
+            session = await asyncio.to_thread(_call_create)
             return session
         except Exception as e:
             logger.exception("Failed to create session: %s", e)
             return {"error": str(e)}
 
-    def list_activities(self, session_id: str):
+    async def list_activities(self, session_id: str):
         """Lists activities to stream to frontend and grab text for handover"""
         if not self.client:
              return []
         try:
-            return self.client.activities.list_all(session_id)
+            return await asyncio.to_thread(self.client.activities.list_all, session_id)
         except Exception as e:
             logger.exception("Failed to list activities: %s", e)
             return []
             
 
-    def list_sources(self):
+    async def list_sources(self):
         """Lists available sources/repositories"""
         if not self.client:
             return []
         try:
-            return self.client.sources.list()
+            return await asyncio.to_thread(self.client.sources.list)
         except Exception as e:
             logger.exception("Failed to list sources: %s", e)
             return []
 
-    def approve_plan(self, session_id: str):
+    async def approve_plan(self, session_id: str):
         if not self.client:
             return True
         try:
-             self.client.sessions.approve_plan(session_id)
+             await asyncio.to_thread(self.client.sessions.approve_plan, session_id)
              return True
         except Exception as e:
              logger.exception("Failed to approve plan: %s", e)
