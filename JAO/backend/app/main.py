@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.routes import workflows, agents
+from app.routes import workflows, agents, sources
 from contextlib import asynccontextmanager
 from app.database import init_db_pool, close_db_pool, init_db_schema
 
@@ -27,6 +27,7 @@ app.add_middleware(
 
 app.include_router(workflows.router, prefix="/api/v1/workflows", tags=["Workflows"])
 app.include_router(agents.router, prefix="/api/v1/agents", tags=["Agents"])
+app.include_router(sources.router, prefix="/api/v1/sources", tags=["Sources"])
 
 @app.get("/health")
 async def health_check() -> dict:

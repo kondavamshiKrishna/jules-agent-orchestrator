@@ -10,12 +10,26 @@ function App() {
   const [task, setTask] = useState('');
   const [repoId, setRepoId] = useState('sources/github/YOUR_USERNAME/repo-name');
   
+
+  const [sources, setSources] = useState([]);
+  const [subscriptionPlan, setSubscriptionPlan] = useState('free');
+  const [activeRuns, setActiveRuns] = useState([]);
+
   // Run tracking
   const [activeRunId, setActiveRunId] = useState(null);
   const [runState, setRunState] = useState(null);
 
+
+
   useEffect(() => {
+    // Fetch available sources
+    axios.get(`${API_BASE}/sources/`).then(res => {
+      setSources(res.data);
+      if(res.data.length > 0) setRepoId(res.data[0].id);
+    }).catch(err => console.error("Failed to fetch sources", err));
+
     // Fetch available agents
+
     axios.get(`${API_BASE}/agents/`).then(res => {
       setAgents(res.data);
       if(res.data.length > 0) setSelectedAgent(res.data[0]);
@@ -23,17 +37,14 @@ function App() {
   }, []);
 
   useEffect(() => {
-    // Poll for workflow status
-    let interval;
-    if (activeRunId && runState?.status !== 'COMPLETED') {
-      interval = setInterval(() => {
-        axios.get(`${API_BASE}/workflows/${activeRunId}`).then(res => {
-          setRunState(res.data);
-        });
-      }, 2000);
-    }
+    // Poll for active workflows
+    const interval = setInterval(() => {
+        axios.get(`${API_BASE}/workflows/`).then(res => {
+          setActiveRuns(res.data);
+        }).catch(err => console.error("Failed to fetch active workflows", err));
+    }, 2000);
     return () => clearInterval(interval);
-  }, [activeRunId, runState]);
+  }, []);
 
   const startWorkflow = async () => {
     if (!task || !selectedAgent) return;
@@ -43,13 +54,13 @@ function App() {
         task,
         starting_agent: selectedAgent.id,
         github_repo_id: repoId,
-        interactive: true
+        interactive: true,
+        plan: subscriptionPlan
       });
-      setActiveRunId(res.data.session_id);
-      setRunState({ status: 'STARTING', history: [] });
+      setTask(''); // Clear task after starting
     } catch (error) {
       console.error("Failed to start workflow", error);
-      alert("Error starting workflow check console");
+      alert(error.response?.data?.detail || "Error starting workflow check console");
     }
   };
 
@@ -96,15 +107,25 @@ function App() {
               </div>
             </div>
 
+
             <div className="form-group">
-              <label><Github size={16} style={{verticalAlign: 'middle', marginRight: '5px'}}/> GitHub Source ID</label>
-              <input 
-                type="text" 
-                value={repoId} 
-                onChange={e => setRepoId(e.target.value)}
-                placeholder="sources/github/userName/repo"
-              />
+              <label>Subscription Plan Limit</label>
+              <select value={subscriptionPlan} onChange={e => setSubscriptionPlan(e.target.value)}>
+                <option value="free">Free (5 Concurrent Tasks)</option>
+                <option value="pro">Pro (15 Concurrent Tasks)</option>
+                <option value="ultra">Ultra (60 Concurrent Tasks)</option>
+              </select>
             </div>
+
+            <div className="form-group">
+              <label><Github size={16} style={{verticalAlign: 'middle', marginRight: '5px'}}/> Source Repository</label>
+              <select value={repoId} onChange={e => setRepoId(e.target.value)}>
+                {sources.map(source => (
+                  <option key={source.id} value={source.id}>{source.name}</option>
+                ))}
+              </select>
+            </div>
+
 
             <div className="form-group">
               <label>Objective / Task</label>
@@ -116,59 +137,40 @@ function App() {
               />
             </div>
 
-            <button onClick={startWorkflow} disabled={!task || !selectedAgent || activeRunId}>
+            <button onClick={startWorkflow} disabled={!task || !selectedAgent}>
               <Play size={16} style={{verticalAlign: 'middle', marginRight: '5px'}}/>
-              {activeRunId ? 'Workflow Running...' : 'Start Workflow'}
+              Start Workflow
             </button>
             
-            {activeRunId && (
-              <button className="secondary" style={{marginLeft: '10px'}} onClick={() => {setActiveRunId(null); setRunState(null);}}>
-                Clear Run
-              </button>
-            )}
+
           </div>
+
 
           {/* Right Column: Live Monitor */}
           <div className="panel monitor-panel" style={{display: 'flex', flexDirection: 'column'}}>
-            <h2><Activity size={18} style={{verticalAlign: 'middle'}}/> Live Monitor</h2>
+            <h2><Activity size={18} style={{verticalAlign: 'middle'}}/> Live Monitor ({activeRuns.length} Active Tasks)</h2>
             
-            {!activeRunId ? (
+            {activeRuns.length === 0 ? (
               <div style={{color: 'var(--text-muted)', textAlign: 'center', marginTop: '40px'}}>
                 <FileText size={48} opacity={0.2} style={{marginBottom: '10px'}}/>
-                <p>No active workflow. Start one to see live progress.</p>
+                <p>No active workflows. Start one to see live progress.</p>
               </div>
             ) : (
-              <div style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
-                 <div style={{marginBottom: '20px'}}>
-                    <strong>Status: </strong>
-                    <span className={`status-badge ${runState?.status?.includes('COMPLETED') ? 'COMPLETED' : 'RUNNING'}`}>
-                      {runState?.status || 'INITIALIZING'}
-                    </span>
-                 </div>
-                 
-                 <div style={{flex: 1, overflowY: 'auto', paddingRight: '10px'}}>
-                    {runState?.history?.map((step, idx) => (
-                      <div key={idx} className="history-item">
-                        <div className="history-agent">@{step.agent}</div>
-                        <div className="history-output">{step.output.trim()}</div>
-                      </div>
-                    ))}
-                    
-                    {runState?.status !== 'COMPLETED' && (
-                        <div className="history-item" style={{opacity: 0.6}}>
-                          <div className="history-agent">Waiting for {runState?.current_agent || 'agent'}...</div>
-                        </div>
-                    )}
-                    
-                    {runState?.status === 'COMPLETED' && (
-                        <div style={{color: 'var(--success)', display: 'flex', alignItems: 'center', gap: '5px', marginTop: '20px'}}>
-                           <CheckCircle size={18} /> Workflow Reached Completion
-                        </div>
-                    )}
-                 </div>
+              <div style={{flex: 1, overflowY: 'auto', paddingRight: '10px'}}>
+                {activeRuns.map(run => (
+                  <div key={run.run_id} className="history-item" style={{marginBottom: '15px', padding: '10px', backgroundColor: 'var(--bg-color)', borderRadius: '6px', border: '1px solid var(--border)'}}>
+                    <div style={{marginBottom: '5px', display: 'flex', justifyContent: 'space-between'}}>
+                      <span className={`status-badge RUNNING`}>{run.status}</span>
+                      <span style={{fontSize: '0.8rem', color: 'var(--text-muted)'}}>Run ID: {run.run_id.substring(0,8)}...</span>
+                    </div>
+                    <div className="history-agent">Current Agent: @{run.current_agent || 'None'}</div>
+                    <div style={{fontSize: '0.85rem', marginTop: '5px', color: 'var(--text-main)'}}>Task: {run.task}</div>
+                  </div>
+                ))}
               </div>
             )}
           </div>
+
 
         </div>
       </div>

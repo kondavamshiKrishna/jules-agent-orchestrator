@@ -60,6 +60,17 @@ class JulesService:
             logger.exception("Failed to list activities: %s", e)
             return []
             
+
+    def list_sources(self):
+        """Lists available sources/repositories"""
+        if not self.client:
+            return []
+        try:
+            return self.client.sources.list()
+        except Exception as e:
+            logger.exception("Failed to list sources: %s", e)
+            return []
+
     def approve_plan(self, session_id: str):
         if not self.client:
             return True

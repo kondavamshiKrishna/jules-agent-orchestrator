@@ -6,6 +6,7 @@ class RunWorkflowRequest(BaseModel):
     starting_agent: str
     github_repo_id: str
     interactive: bool = True
+    plan: str = "free"
 
 class WorkflowResponse(BaseModel):
     session_id: str

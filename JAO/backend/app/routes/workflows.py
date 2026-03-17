@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 import logging
 
 logger = logging.getLogger(__name__)
@@ -25,6 +25,16 @@ async def run_workflow(request: RunWorkflowRequest):
     # Insert initial state into DB
     pool = get_db_pool()
     async with pool.acquire() as conn:
+        # Check active runs count limit based on plan
+        limits = {"free": 5, "pro": 15, "ultra": 60}
+        max_runs = limits.get(request.plan.lower(), 5)
+
+        active_count = await conn.fetchval(
+            "SELECT COUNT(*) FROM workflow_runs WHERE status != 'COMPLETED' AND status NOT LIKE 'ERROR%'"
+        )
+        if active_count >= max_runs:
+            raise HTTPException(status_code=429, detail=f"Plan {request.plan} limit of {max_runs} concurrent sessions exceeded.")
+
         await conn.execute(
             """
             INSERT INTO workflow_runs (run_id, status, current_agent, task, history)
@@ -42,7 +52,26 @@ async def run_workflow(request: RunWorkflowRequest):
         message=f"Workflow started with {request.starting_agent}"
     )
 
+
+@router.get("/")
+async def list_active_workflows():
+    pool = get_db_pool()
+    async with pool.acquire() as conn:
+        records = await conn.fetch(
+            "SELECT run_id, status, current_agent, task FROM workflow_runs WHERE status != 'COMPLETED' AND status NOT LIKE 'ERROR%'"
+        )
+        runs = []
+        for r in records:
+            runs.append({
+                "run_id": str(r["run_id"]),
+                "status": r["status"],
+                "current_agent": r["current_agent"],
+                "task": r["task"]
+            })
+        return runs
+
 @router.get("/{run_id}")
+
 async def get_workflow_status(run_id: str):
     pool = get_db_pool()
     async with pool.acquire() as conn:
