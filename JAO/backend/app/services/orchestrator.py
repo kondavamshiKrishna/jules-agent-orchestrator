@@ -1,36 +1,75 @@
 import re
 import os
+import logging
+import asyncio
+
+logger = logging.getLogger(__name__)
 
 class OrchestratorEngine:
     """
-    The heart of the JAO loop. This class reads the '.jao/task_board.md'
-    to understand what the next step should be, fully relying on the filesystem state
-    rather than brittle chat output regex parsing.
+    The core of the JAO autonomous loop.
+    The Orchestrator acts as the "Firm Manager," looking at the
+    '.jao/task_board.md' and related dashboards in the GitHub repo to
+    decide the next agent to spawn. It ignores chat text entirely.
     """
-    
-    @staticmethod
-    def parse_handover(output_text: str = ""):
-        """
-        Reads the '.jao/task_board.md' file to determine the next assigned agent.
-        It looks for the first uncompleted task that has an assignment.
-        Example task format: '- [ ] Implement feature X (Assigned to: @pydan)'
-        """
-        task_board_path = ".jao/task_board.md"
-        if not os.path.exists(task_board_path):
-            return None
 
-        with open(task_board_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
+    @staticmethod
+    async def fetch_remote_file(github_repo_id: str, file_path: str) -> str:
+        """
+        Fetches a file directly from the remote GitHub repository using the Jules SDK
+        or GitHub API. For now, since the Jules SDK `read_file` is not fully mocked,
+        we simulate checking if the file exists locally (if we are working on a local clone)
+        or return None if it doesn't exist remotely.
+        """
+        # In a fully productionized cloud environment, this would call:
+        # client = get_jules_client()
+        # return await client.repo.read_file(github_repo_id, file_path)
+
+        # Fallback to local clone path if running locally against the repo it's sitting in
+        if os.path.exists(file_path):
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    return f.read()
+            except Exception as e:
+                logger.exception("Failed to read local file %s: %s", file_path, e)
+                return None
+        return None
+
+    @staticmethod
+    async def is_repo_initialized(github_repo_id: str) -> bool:
+        """Check if the .jao folder exists in the remote repo."""
+        content = await OrchestratorEngine.fetch_remote_file(github_repo_id, ".jao/task_board.md")
+        return content is not None
+
+    @staticmethod
+    async def read_blackboard_state(github_repo_id: str) -> dict:
+        """
+        Reads the '.jao/task_board.md' file from the remote repo to determine the next assigned agent.
+        It looks for the first uncompleted task that has an assignment.
+        Example format: '- [ ] Implement feature X (Assigned to: @pydan)'
+        """
+
+        board_content = await OrchestratorEngine.fetch_remote_file(github_repo_id, ".jao/task_board.md")
+
+        # If the task board doesn't exist remotely, we must bootstrap
+        if not board_content:
+            return {
+                "next_agent": "syncer_onboard",
+                "prompt": "Initialize the .jao/ directory, project map, and task board for this repository. Assign the first task to @ada.",
+                "mode": "Start"
+            }
+
+        lines = board_content.splitlines()
 
         for line in lines:
-            # Look for an uncompleted task line: '- [ ]'
+            # Find the first uncompleted task
             if "- [ ]" in line:
-                # Look for assignment: '@agent_tag'
+                # Look for an assignment tag (e.g., '@pydan')
                 assignment_match = re.search(r'@([a-z_]+)', line, re.IGNORECASE)
                 if assignment_match:
                     tag = assignment_match.group(1).lower()
 
-                    # Map tag to full agent ID
+                    # Agent mapping
                     agent_map = {
                         "pydan": "py_dan_backend",
                         "rita": "react_rita_frontend",
@@ -40,26 +79,40 @@ class OrchestratorEngine:
                         "vera": "vera_verifier",
                         "priya": "priya_promptcraft",
                         "omega": "omega_system_auditor",
-                        "syncer": "syncer_master"
+                        "syncer": "syncer_master",
+                        "onboard": "syncer_onboard"
                     }
                     mapped_agent = agent_map.get(tag, tag)
 
-                    # Extract the task prompt
-                    task_prompt = line.split("- [ ]")[1].strip()
+                    # Extract the task description
+                    try:
+                        task_desc = line.split("- [ ]")[1].split("(Assigned")[0].strip()
+                    except IndexError:
+                        task_desc = line.split("- [ ]")[1].strip()
 
                     return {
                         "next_agent": mapped_agent,
-                        "prompt": f"Task from board: {task_prompt}\n\nRead your specific workspace folder in '.jao/workspace/' for detailed handovers or reports from the previous agent.",
-                        "mode": "Interactive Plan" if mapped_agent in ["py_dan_backend", "ada_architect", "priya_promptcraft"] else "Start"
+                        "prompt": f"Task from board: {task_desc}\n\nRead your specific workspace folder in '.jao/workspace/' for detailed handovers, blueprints, or test reports from the previous agent. Update the task board when done.",
+                        "mode": "Start"  # Fully autonomous, no interactive approval needed
                     }
 
-        # If no uncompleted tasks have an assigned agent
+        # If all tasks are completed or no agent is assigned
         return None
 
     @staticmethod
-    def detect_inbox_files(session_id: str):
-        # Legacy: No longer heavily used since we rely on `.jao/workspace/`
-        pass
+    async def get_context_injection(github_repo_id: str) -> str:
+        """
+        Loads the entire '.jao/project_map.md' and '.jao/task_board.md'
+        from the remote repo to inject into the agent's prompt so they don't have to guess.
+        """
+        context = "=== JAO REPOSITORY STATE ===\n"
 
-    async def spawn_next_with_context(self, session_id: str, current_file: str):
-        pass
+        map_content = await OrchestratorEngine.fetch_remote_file(github_repo_id, ".jao/project_map.md")
+        if map_content:
+            context += f"\n-- Project Map --\n{map_content}\n"
+
+        board_content = await OrchestratorEngine.fetch_remote_file(github_repo_id, ".jao/task_board.md")
+        if board_content:
+            context += f"\n-- Task Board --\n{board_content}\n"
+
+        return context

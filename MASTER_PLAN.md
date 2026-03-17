@@ -35,14 +35,13 @@
 
 ---
 
-## 🔄 The "Boston Pass" Loop (v2.1)
+## 🔄 The "Boston Pass" Loop (v3.0 - Full Autonomy)
 
-1.  **Orientation (Rule 0)**: Agent wakes up -> Reads `.jao/project_map.md` & `.jao/task_board.md`.
-2.  **Execution**: Agent performs their specific role tasks.
-3.  **Register**: Agent adds any new files discovered to `.jao/project_map.md`.
-4.  **Assign**: Agent marks their task `[x]` and assigns the next agent in `.jao/task_board.md`.
-5.  **Handoff**: Agent mentions the mission is ready for the next session.
-
+1.  **Repository Setup**: When a new repo is connected, the Orchestrator runs `@onboard` to create the `.jao/` directory. If it already exists, this step is skipped.
+2.  **Orchestrator Polling**: The Backend Orchestrator continuously reads `.jao/task_board.md` (and related `.jao/workspace/` dashboards).
+3.  **Agent Spawning**: The Orchestrator identifies the next assigned agent (e.g., `Assigned: @pydan`). It automatically starts a Jules session for that agent, feeding it the current state of `.jao/`.
+4.  **Execution & Write-Back**: The agent executes silently (Silent Fleet). They read `.jao/project_map.md` to find files, write their code or audits, update the dashboard, and assign the next agent.
+5.  **Cleanup**: The Orchestrator detects completion, reads the new `.jao/` state, deletes the old session to save resources, and loops back to step 3.
 ---
 
 ### Agent Categories (Expanded Firm)
