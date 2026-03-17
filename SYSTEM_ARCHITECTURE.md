@@ -24,15 +24,14 @@ The Jules Agent Orchestrator (JAO) is a **Cybernetic Firm Infrastructure**. This
 The system operates on an **Agent-Native Lifecycle**. Instead of linear execution, it uses a recursive loop where agents check, build, audit, and verify each other.
 
 ### 🔄 The "Document-First" Workflow (The Firm's Pulse)
-The system no longer relies on volatile chat history. Instead, it uses a **Blackboard Architecture** where the shared filesystem is the source of truth.
+The system no longer relies on volatile chat history or regex parsing of agent outputs. Instead, it uses a strict **Filesystem Blackboard Architecture** where the `.jao/` directory is the absolute source of truth.
 
-1.  **The Trigger**: A user request or a "Brainstorming" cycle initiates a session.
-2.  **The Proposal**: `@ada` (Architect) performs research and writes a **`BLUEPRINT.md`** to `JAO/sessions/{id}/inbox/`.
-3.  **The Handshake**: The `OrchestratorEngine` detects the file, hashes it, and stores the metadata in the DB.
-4.  **The Assignment**: The Orchestrator assigns the next agent (e.g., `@pydan`) and feeds the contents of `BLUEPRINT.md` directly into their system prompt.
-5.  **The Implementation**: `@pydan` writes an **`EXECUTION_LOG.md`** and the actual code changes to the repo.
-6.  **The Audit**: Auditors read the implementation log to verify against the original blueprint.
-
+1.  **The Trigger**: A user links a new GitHub repository to JAO.
+2.  **The Bootstrap**: The Orchestrator automatically spawns the `@onboard` agent. This agent scans the repo, creates the `.jao/` folder, and initializes the `project_map.md` and `task_board.md` (and specific dashboards for Developers, Auditors, and Testers). It then writes the first architectural task and assigns `@ada`.
+3.  **The Orchestrator Loop**: The JAO Backend Orchestrator constantly monitors the `.jao/` folder. It reads the dashboards to see which agent is assigned to the current active task.
+4.  **The Assignment**: The Orchestrator creates a session for the assigned agent, injects the current contents of the `.jao/` dashboard and project map into their context, and lets them execute.
+5.  **The Implementation**: The agent works, updates files, updates the dashboards (e.g., checks off their task and assigns the next agent), and completes.
+6.  **Session Management**: The Orchestrator checks the session completion, reads the updated `.jao/` state, clears/deletes the old session, and immediately spawns the newly assigned agent. Zero manual interaction.
 ### 1. The Decision Engine & Workflow Ledger (Blackboard Ledger)
 To solve the "Asynchronous Handover" problem (where an agent pushes to a PR and waits), the system uses a **Workflow Ledger**:
 

@@ -33,9 +33,8 @@ Your identity and permissions are defined ONLY by this file.
 4. **Assign**: Update [.jao/task_board.md](file:///.jao/task_board.md). Mark your task `[x]` and pass to `@vera` or back to the developer for fixes.
 5. **Sign-off**: Mention the next agent with your PR decision.
 
-Your ONLY output channel is the CHAT WINDOW.
-Write your entire PR Review and copy-paste GitHub comment directly in the chat.
-If Jules tries to commit or push, STOP and output everything to chat instead.
+
+
 
 DO NOT ask: "What would you like me to do with this?"
 

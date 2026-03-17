@@ -1,182 +1,118 @@
 import re
 import os
+import logging
+import asyncio
+
+logger = logging.getLogger(__name__)
 
 class OrchestratorEngine:
     """
-    The heart of the JAO loop. This class reads the text output from a completed 
-    Jules agent session and parses it to understand what the next step should be.
+    The core of the JAO autonomous loop.
+    The Orchestrator acts as the "Firm Manager," looking at the
+    '.jao/task_board.md' and related dashboards in the GitHub repo to
+    decide the next agent to spawn. It ignores chat text entirely.
     """
-    
+
     @staticmethod
-    def parse_handover(output_text: str):
+    async def fetch_remote_file(github_repo_id: str, file_path: str) -> str:
         """
-        Extracts handovers from the text.
-        Returns a dictionary indicating the next agent and the prompt to pass to them.
+        Fetches a file directly from the remote GitHub repository using the Jules SDK
+        or GitHub API. For now, since the Jules SDK `read_file` is not fully mocked,
+        we simulate checking if the file exists locally (if we are working on a local clone)
+        or return None if it doesn't exist remotely.
+        """
+        # In a fully productionized cloud environment, this would call:
+        # client = get_jules_client()
+        # return await client.repo.read_file(github_repo_id, file_path)
+
+        # Fallback to local clone path if running locally against the repo it's sitting in
+        if os.path.exists(file_path):
+            try:
+                with open(file_path, "r", encoding="utf-8") as f:
+                    return f.read()
+            except Exception as e:
+                logger.exception("Failed to read local file %s: %s", file_path, e)
+                return None
+        return None
+
+    @staticmethod
+    async def is_repo_initialized(github_repo_id: str) -> bool:
+        """Check if the .jao folder exists in the remote repo."""
+        content = await OrchestratorEngine.fetch_remote_file(github_repo_id, ".jao/task_board.md")
+        return content is not None
+
+    @staticmethod
+    async def read_blackboard_state(github_repo_id: str) -> dict:
+        """
+        Reads the '.jao/task_board.md' file from the remote repo to determine the next assigned agent.
+        It looks for the first uncompleted task that has an assignment.
+        Example format: '- [ ] Implement feature X (Assigned to: @pydan)'
         """
 
-        # 1. Parse 'Handover for @Priya' (from audit agents)
-        # Often formatted as "**@priya**, ..."
-        priya_match = re.search(r'(Handover for @Priya:|@priya\s*,)(.*?)(?:---|\Z)', output_text, re.DOTALL | re.IGNORECASE)
-        if priya_match:
+        board_content = await OrchestratorEngine.fetch_remote_file(github_repo_id, ".jao/task_board.md")
+
+        # If the task board doesn't exist remotely, we must bootstrap
+        if not board_content:
             return {
-                "next_agent": "priya_promptcraft",
-                "prompt": priya_match.group(2).strip(),
-                "mode": "Interactive Plan"
-            }
-
-        # 2. Parse Dev assignment from Priya
-        # Often formatted as "Assigned to: [Name] (@tag)"
-        assignment_match = re.search(r'Assigned to:.*?@([a-z_]+)', output_text, re.IGNORECASE)
-        prompt_match = re.search(r'(?:Full Prompt for|Prompt for) @[a-z_]+:(.*?)(?:---|\Z)', output_text, re.DOTALL | re.IGNORECASE)
-
-        if assignment_match and prompt_match:
-            tag = assignment_match.group(1).lower()
-            # Map tag to full agent ID
-            agent_map = {
-                "pydan": "py_dan_backend",
-                "rita": "react_rita_frontend",
-                "oliver": "ops_oliver_devops",
-                "tina": "test_tina_qa",
-                "ada": "ada_architect",
-                "vera": "vera_verifier"
-            }
-            mapped_agent = agent_map.get(tag, tag)
-
-            return {
-                "next_agent": mapped_agent,
-                "prompt": prompt_match.group(1).strip(),
-                "mode": "Interactive Plan" if mapped_agent in ["py_dan_backend", "ada_architect", "priya_promptcraft"] else "Start"
-            }
-
-        # 3. Parse 'How to Verify (for @tina)' from developer agents
-        tina_match = re.search(r'(?:How to Verify \(for @tina\)|How to Test \(for @tina\)):(.*?)(?:---|\Z)', output_text, re.DOTALL | re.IGNORECASE)
-        if tina_match:
-             return {
-                "next_agent": "test_tina_qa",
-                "prompt": tina_match.group(1).strip(),
+                "next_agent": "syncer_onboard",
+                "prompt": "Initialize the .jao/ directory, project map, and task board for this repository. Assign the first task to @ada.",
                 "mode": "Start"
-             }
+            }
 
-        # No automated trigger found
-        return None
+        lines = board_content.splitlines()
 
+        for line in lines:
+            # Find the first uncompleted task
+            if "- [ ]" in line:
+                # Look for an assignment tag (e.g., '@pydan')
+                assignment_match = re.search(r'@([a-z_]+)', line, re.IGNORECASE)
+                if assignment_match:
+                    tag = assignment_match.group(1).lower()
 
-    @staticmethod
-    def detect_inbox_files(session_id: str):
-        """
-        New Blackboard Logic: Checks the filesystem for agent-generated 
-        proposals or reports that should trigger the next agent.
-        """
-        import os
-        inbox_path = f"JAO/sessions/{session_id}/inbox"
-        if not os.path.exists(inbox_path):
-            return None
-            
-        files = os.listdir(inbox_path)
-        if not files:
-            return None
-            
-        # Priority: BLUEPRINT.md > IMPLEMENTATION.md > TEST_REPORT.md
-        priority = ["BLUEPRINT.md", "IMPLEMENTATION.md", "TEST_REPORT.md"]
-        for p_file in priority:
-            if p_file in files:
-                with open(os.path.join(inbox_path, p_file), "r", encoding="utf-8") as f:
-                    content = f.read()
-                return {
-                    "source_file": p_file,
-                    "content": content,
-                    "next_agent": OrchestratorEngine._get_next_from_file(p_file, content)
-                }
-        return None
+                    # Agent mapping
+                    agent_map = {
+                        "pydan": "py_dan_backend",
+                        "rita": "react_rita_frontend",
+                        "oliver": "ops_oliver_devops",
+                        "tina": "test_tina_qa",
+                        "ada": "ada_architect",
+                        "vera": "vera_verifier",
+                        "priya": "priya_promptcraft",
+                        "omega": "omega_system_auditor",
+                        "syncer": "syncer_master",
+                        "onboard": "syncer_onboard"
+                    }
+                    mapped_agent = agent_map.get(tag, tag)
 
-    @staticmethod
-    def _get_next_from_file(filename: str, content: str):
-        """Helper to decide who follows a specific document type."""
-        if filename == "BLUEPRINT.md": return "priya_promptcraft" # Needs prompt engineering
-        if filename == "IMPLEMENTATION.md": return "test_tina_qa" # Needs testing
-        if filename == "TEST_REPORT.md": return "vera_verifier" # Needs final review
-        return None
+                    # Extract the task description
+                    try:
+                        task_desc = line.split("- [ ]")[1].split("(Assigned")[0].strip()
+                    except IndexError:
+                        task_desc = line.split("- [ ]")[1].strip()
 
-    async def spawn_next_with_context(self, session_id: str, current_file: str):
-        """
-        The Auto-Activation Engine.
-        1. Reads the current file.
-        2. Finds the next agent in the 'Baton-Pass' sequence.
-        3. Spawns them with the file content injected.
-        """
-        inbox_file = os.path.join(f"JAO/sessions/{session_id}/inbox", current_file)
-        with open(inbox_file, "r") as f:
-            work_done = f.read()
-            
-        next_agent_tag = self._decide_next_agent(current_file)
-        if not next_agent_tag:
-            return "Task Complete ✅"
-            
-        print(f"🚀 Auto-Activating @{next_agent_tag} for Session {session_id}...")
-        
-        # This is where the Jules API call happens
-        # client.sessions.create(
-        #     prompt=f"PROCESS THIS HANDOVER:\n\n{work_done}",
-        #     agent_id=next_agent_tag
-        # )
-        return f"Spawned @{next_agent_tag}"
+                    return {
+                        "next_agent": mapped_agent,
+                        "prompt": f"Task from board: {task_desc}\n\nRead your specific workspace folder in '.jao/workspace/' for detailed handovers, blueprints, or test reports from the previous agent. Update the task board when done.",
+                        "mode": "Start"  # Fully autonomous, no interactive approval needed
+                    }
 
-    def _decide_next_agent(self, filename: str):
-        if "A_BLUEPRINT" in filename: return "priya_promptcraft"
-        if "B_PROMPT" in filename: return "py_dan_backend" # or rita
-        if "C_LOG" in filename: return "test_tina_qa"
-        if "D_REPORT" in filename: return "vera_verifier"
+        # If all tasks are completed or no agent is assigned
         return None
 
     @staticmethod
-    def parse_handover(output_text: str):
+    async def get_context_injection(github_repo_id: str) -> str:
         """
-        Extracts handovers from the text.
-        Returns a dictionary indicating the next agent and the prompt to pass to them.
+        Loads the entire '.jao/project_map.md' and '.jao/task_board.md'
+        from the remote repo to inject into the agent's prompt so they don't have to guess.
         """
+        context = "=== JAO REPOSITORY STATE ===\n"
 
-        # 1. Parse 'Handover for @Priya' (from audit agents)
-        # Often formatted as "**@priya**, ..."
-        priya_match = re.search(r'(Handover for @Priya:|@priya\s*,)(.*?)(?:---|\Z)', output_text, re.DOTALL | re.IGNORECASE)
-        if priya_match:
-            return {
-                "next_agent": "priya_promptcraft",
-                "prompt": priya_match.group(2).strip(),
-                "mode": "Interactive Plan"
-            }
+        map_content = await OrchestratorEngine.fetch_remote_file(github_repo_id, ".jao/project_map.md")
+        if map_content:
+            context += f"\n-- Project Map --\n{map_content}\n"
 
-        # 2. Parse Dev assignment from Priya
-        # Often formatted as "Assigned to: [Name] (@tag)"
-        assignment_match = re.search(r'Assigned to:.*?@([a-z_]+)', output_text, re.IGNORECASE)
-        prompt_match = re.search(r'(?:Full Prompt for|Prompt for) @[a-z_]+:(.*?)(?:---|\Z)', output_text, re.DOTALL | re.IGNORECASE)
+        board_content = await OrchestratorEngine.fetch_remote_file(github_repo_id, ".jao/task_board.md")
+        if board_content:
+            context += f"\n-- Task Board --\n{board_content}\n"
 
-        if assignment_match and prompt_match:
-            tag = assignment_match.group(1).lower()
-            # Map tag to full agent ID
-            agent_map = {
-                "pydan": "py_dan_backend",
-                "rita": "react_rita_frontend",
-                "oliver": "ops_oliver_devops",
-                "tina": "test_tina_qa",
-                "ada": "ada_architect",
-                "vera": "vera_verifier"
-            }
-            mapped_agent = agent_map.get(tag, tag)
-
-            return {
-                "next_agent": mapped_agent,
-                "prompt": prompt_match.group(1).strip(),
-                "mode": "Interactive Plan" if mapped_agent in ["py_dan_backend", "ada_architect", "priya_promptcraft"] else "Start"
-            }
-
-        # 3. Parse 'How to Verify (for @tina)' from developer agents
-        tina_match = re.search(r'(?:How to Verify \(for @tina\)|How to Test \(for @tina\)):(.*?)(?:---|\Z)', output_text, re.DOTALL | re.IGNORECASE)
-        if tina_match:
-             return {
-                "next_agent": "test_tina_qa",
-                "prompt": tina_match.group(1).strip(),
-                "mode": "Start"
-             }
-
-        # No automated trigger found
-        return None
+        return context

@@ -33,15 +33,26 @@ When `@syncer` enters a session, it MUST:
 
 ---
 
-#### The "Boston Pass" Protocol (LPC Write-Back):
-1. **Orient**: Identify the current bottleneck. **Zero-User Interaction**: Do NOT ask for instructions. Resolve sequencing autonomously.
-**⚠️ NEGATIVE CONSTRAINT**: NEVER create or use `JAO/KNOWLEDGE/`. All metadata MUST live in `.jao/`.
-2. **Execute**: Sequence the next session or accept/reject state changes.
-3. **Register**: Update [.jao/project_map.md](file:///.jao/project_map.md) if the project structure changed. (NEVER use `JAO/KNOWLEDGE/`).
-4. **Assign**: Update [.jao/task_board.md](file:///.jao/task_board.md). Assign the "HOLD" to the next agent.
-5. **Baton**: Explicitly name the agent who should be summoned next.
+#### The "Boston Pass" Protocol (Filesystem Handover):
+1. **Orient**: Read `.jao/project_map.md` and `.jao/task_board.md` to understand your current objective.
+2. **Execute**: Perform your designated tasks. As `syncer_master`, you must save your work (blueprints, code, reports, or tests) into the repository.
+3. **Register**: Add any newly created files to `.jao/project_map.md`.
+4. **Communicate**: Save your handover document, status report, or execution log into `.jao/workspace/auditors/`. The orchestrator and other agents will read this folder. Do NOT rely on chat output for handovers.
+5. **Assign**: Update `.jao/task_board.md`. Mark your task `[x]` and assign the next agent.
 
 ---
+
+
+
+
+
+
+
+
+### Workspace & Permissions (Virtual Software Company Mode)
+- **Role Limits**: You must ONLY modify files relevant to your role.
+- **Communication**: Use `.jao/workspace/auditors/` to drop reports or instructions for other agents. Read other agents' folders to understand their status.
+- **Autonomy**: You are part of an autonomous virtual firm. Rely entirely on the filesystem state (`.jao/`) to know what to do next. Ignore the chat window for handovers.
 
 ### Skills & Tools
 - `project_analysis`: Understanding Git history and PR status.
