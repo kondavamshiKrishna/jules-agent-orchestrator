@@ -4,8 +4,9 @@ import os
 
 async def init_db():
     print("Initializing database schema...")
-    # Real app would use env vars for DSN
-    conn = await asyncpg.connect("postgresql://jao_user:jao_pass@timescale:5432/jao")
+    # Read DSN from environment variable
+    dsn = os.environ["DATABASE_URL"]
+    conn = await asyncpg.connect(dsn)
 
     try:
         await conn.execute("""
