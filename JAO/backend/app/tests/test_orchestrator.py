@@ -71,5 +71,28 @@ class TestOrchestrator(unittest.TestCase):
             result = OrchestratorEngine.parse_handover(text)
             self.assertEqual(result["next_agent"], agent)
 
+
+import asyncio
+from unittest.mock import patch
+
+def async_test(f):
+    def wrapper(*args, **kwargs):
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        return loop.run_until_complete(f(*args, **kwargs))
+    return wrapper
+
+class TestOrchestratorEngineV2(unittest.TestCase):
+    @async_test
+    async def test_fetch_remote_file_error_path(self):
+        """Verify that an exception during local file read returns None and logs the error."""
+        test_exception = Exception("Disk Error")
+        with patch("os.path.exists", return_value=True):
+            with patch("builtins.open", side_effect=test_exception):
+                with patch("app.services.orchestrator.logger.exception") as mock_logger:
+                    result = await OrchestratorEngine.fetch_remote_file("test-repo", ".jao/task_board.md")
+                    self.assertIsNone(result)
+                    mock_logger.assert_called_once_with("Failed to read local file %s: %s", ".jao/task_board.md", test_exception)
+
 if __name__ == '__main__':
     unittest.main()
