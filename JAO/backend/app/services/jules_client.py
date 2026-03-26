@@ -4,6 +4,12 @@ import logging
 
 from pydantic import BaseModel
 
+try:
+    from jules_agent_sdk.exceptions import JulesAPIError
+except ImportError:
+    JulesAPIError = Exception
+
+
 logger = logging.getLogger(__name__)
 
 class JulesClientConfig(BaseModel):
@@ -29,7 +35,7 @@ class JulesService:
             # We should ideally call something here, but for now just returning True
             # to preserve existing (placeholder) logic but with better error handling.
             return True
-        except Exception as e:
+        except JulesAPIError as e:
             logger.exception("Connection test failed: %s", e)
             return False
 
@@ -49,7 +55,7 @@ class JulesService:
                 )
             session = await asyncio.to_thread(_call_create)
             return session
-        except Exception as e:
+        except JulesAPIError as e:
             logger.exception("Failed to create session: %s", e)
             return {"error": str(e)}
 
@@ -59,7 +65,7 @@ class JulesService:
              return []
         try:
             return await asyncio.to_thread(self.client.activities.list_all, session_id)
-        except Exception as e:
+        except JulesAPIError as e:
             logger.exception("Failed to list activities: %s", e)
             return []
             
@@ -69,7 +75,7 @@ class JulesService:
         try:
              await asyncio.to_thread(self.client.sessions.approve_plan, session_id)
              return True
-        except Exception as e:
+        except JulesAPIError as e:
              logger.exception("Failed to approve plan: %s", e)
              return False
 
