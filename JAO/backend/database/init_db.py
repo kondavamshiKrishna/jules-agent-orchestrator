@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 async def init_db():
     logger.info("Initializing database schema...")
     # Real app would use env vars for DSN
-    conn = await asyncpg.connect("postgresql://jao_user:jao_pass@timescale:5432/jao")
+    conn = await asyncpg.connect(os.getenv("DATABASE_URL", "postgresql://jao_user:jao_pass@timescale:5432/jao"))
 
     try:
         await conn.execute("""
