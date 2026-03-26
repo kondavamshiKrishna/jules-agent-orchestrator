@@ -77,3 +77,9 @@ def test_json_safe_nested():
         "record": {"nested_uuid": str(u)},
         "dict": {"dt": "2024-01-01T12:00:00"}
     }
+
+def test_json_safe_unsupported():
+    class CustomObj:
+        pass
+    obj = CustomObj()
+    assert db.json_safe(obj) == obj
