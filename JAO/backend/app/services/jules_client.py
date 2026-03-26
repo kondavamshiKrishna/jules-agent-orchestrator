@@ -26,8 +26,7 @@ class JulesService:
         if not self.client:
             return False
         try:
-            # We should ideally call something here, but for now just returning True
-            # to preserve existing (placeholder) logic but with better error handling.
+            self.client.sources.list()
             return True
         except Exception as e:
             logger.exception("Connection test failed: %s", e)
