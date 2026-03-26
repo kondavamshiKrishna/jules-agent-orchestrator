@@ -61,11 +61,12 @@ class OrchestratorEngine:
 
         lines = board_content.splitlines()
 
+        assignment_pattern = re.compile(r'@([a-z_]+)', re.IGNORECASE)
         for line in lines:
             # Find the first uncompleted task
             if "- [ ]" in line:
                 # Look for an assignment tag (e.g., '@pydan')
-                assignment_match = re.search(r'@([a-z_]+)', line, re.IGNORECASE)
+                assignment_match = assignment_pattern.search(line)
                 if assignment_match:
                     tag = assignment_match.group(1).lower()
 
