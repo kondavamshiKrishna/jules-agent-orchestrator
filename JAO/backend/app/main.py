@@ -17,13 +17,13 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title="Jules Agent Orchestrator (JAO)", version="0.1.0", lifespan=lifespan)
 
 # Security: Restrict origins in production
-# For now, we restrict to the known frontend port
-allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:3005")
-allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
+# Use environment variable for configurable CORS origins, fallback to localhost
+cors_allowed_origins = os.getenv("ALLOWED_ORIGINS", "http://localhost:3005")
+cors_origins_list = [origin.strip() for origin in cors_allowed_origins.split(",") if origin.strip()]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=cors_origins_list,
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
