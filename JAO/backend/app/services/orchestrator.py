@@ -16,6 +16,7 @@ AGENT_MAP = {
     "omega": "omega_system_auditor",
     "syncer": "syncer_master",
     "onboard": "syncer_onboard"
+    # Centralized agent map for orchestrator assignment
 }
 
 
@@ -134,19 +135,7 @@ class OrchestratorEngine:
                 if assignment_match:
                     tag = assignment_match.group(1).lower()
 
-                    agent_map = {
-                        "pydan": "py_dan_backend",
-                        "rita": "react_rita_frontend",
-                        "oliver": "ops_oliver_devops",
-                        "tina": "test_tina_qa",
-                        "ada": "ada_architect",
-                        "vera": "vera_verifier",
-                        "priya": "priya_promptcraft",
-                        "omega": "omega_system_auditor",
-                        "syncer": "syncer_master",
-                        "onboard": "syncer_onboard"
-                    }
-                    mapped_agent = agent_map.get(tag, tag)
+                    mapped_agent = AGENT_MAP.get(tag, tag)
 
                     try:
                         task_desc = line.split("- [ ]")[1].split("(Assigned")[0].strip()
