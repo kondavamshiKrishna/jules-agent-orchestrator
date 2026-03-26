@@ -118,7 +118,7 @@ async def _run_engine_loop(run_id: str, start_agent: str, start_task: str, reque
             persona_content = await asyncio.to_thread(_read_file_sync, abs_persona_path)
         except Exception as e:
             logger.exception("Error loading persona: %s", e)
-            persona_content = "Error loading persona."
+            persona_content = "Error loading persona. Details hidden for security."
             
         # 2. Inject the entire Blackboard State (.jao/) into the prompt so the agent isn't blind
         system_context = await OrchestratorEngine.get_context_injection(request.github_repo_id)
