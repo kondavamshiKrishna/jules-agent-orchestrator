@@ -1,3 +1,4 @@
+import os
 # Note: Ensure 'asyncpg' is installed via winget or pip
 import asyncpg
 import json
@@ -9,7 +10,7 @@ async def init_db_pool():
     global db_pool
     # Real app would use env vars for DSN
     db_pool = await asyncpg.create_pool(
-        dsn="postgresql://jao_user:jao_pass@timescale:5432/jao"
+        dsn=os.environ["DATABASE_URL"]
     )
     
     # Ensure tables exist
