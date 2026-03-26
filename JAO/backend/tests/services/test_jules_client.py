@@ -29,3 +29,15 @@ def test_jules_service_test_connection_success():
 
     # Assert
     assert result is True
+
+def test_jules_service_test_connection_no_client_mocked():
+    # Arrange
+    service = JulesService("dummy_api_key")
+    # Simulate failed SDK instantiation
+    service.client = None
+
+    # Act
+    result = service.test_connection()
+
+    # Assert
+    assert result is False
