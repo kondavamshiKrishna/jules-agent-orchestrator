@@ -128,9 +128,10 @@ class OrchestratorEngine:
 
         lines = board_content.splitlines()
 
+        assignment_pattern = re.compile(r'@([a-z_]+)', re.IGNORECASE)
         for line in lines:
             if "- [ ]" in line:
-                assignment_match = re.search(r'@([a-z_]+)', line, re.IGNORECASE)
+                assignment_match = assignment_pattern.search(line)
                 if assignment_match:
                     tag = assignment_match.group(1).lower()
 
