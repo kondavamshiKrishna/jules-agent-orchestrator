@@ -40,8 +40,8 @@ class OrchestratorEngine:
         # return await client.repo.read_file(github_repo_id, file_path)
 
         # Prevent Path Traversal Vulnerability
-        base_dir = os.path.abspath(os.getcwd())
-        abs_path = os.path.abspath(file_path)
+        base_dir = os.path.realpath(os.getcwd())
+        abs_path = os.path.realpath(file_path)
 
         try:
             if os.path.commonpath([base_dir, abs_path]) != base_dir:
