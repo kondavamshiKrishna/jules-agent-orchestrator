@@ -58,7 +58,7 @@ def json_safe(obj):
     """
     if isinstance(obj, asyncpg.Record):
         return {k: json_safe(v) for k, v in obj.items()}
-    if isinstance(obj, list):
+    if isinstance(obj, (list, tuple, set)):
         return [json_safe(i) for i in obj]
     if isinstance(obj, dict):
         return {k: json_safe(v) for k, v in obj.items()}
