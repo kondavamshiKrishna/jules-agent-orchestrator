@@ -32,7 +32,7 @@ async def run_workflow(request: RunWorkflowRequest):
             starting_agent = next_step["next_agent"]
             task = next_step["prompt"]
         else:
-            return {"error": "No uncompleted tasks assigned on the blackboard."}
+            return {"error": "No uncompleted tasks assigned on the project blackboard."}
 
     # Insert initial state into DB
     pool = get_db_pool()
