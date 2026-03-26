@@ -25,10 +25,22 @@ class OrchestratorEngine:
         # client = get_jules_client()
         # return await client.repo.read_file(github_repo_id, file_path)
 
+        # Prevent Path Traversal Vulnerability
+        base_dir = os.path.abspath(os.getcwd())
+        abs_path = os.path.abspath(file_path)
+
+        try:
+            if os.path.commonpath([base_dir, abs_path]) != base_dir:
+                logger.warning("Attempted path traversal detected: %s", file_path)
+                return None
+        except ValueError as e:
+            logger.exception("Invalid path provided for fetching remote file: %s", e)
+            return None
+
         # Fallback to local clone path if running locally against the repo it's sitting in
-        if os.path.exists(file_path):
+        if os.path.exists(abs_path):
             try:
-                with open(file_path, "r", encoding="utf-8") as f:
+                with open(abs_path, "r", encoding="utf-8") as f:
                     return f.read()
             except Exception as e:
                 logger.exception("Failed to read local file %s: %s", file_path, e)
