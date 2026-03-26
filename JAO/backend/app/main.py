@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.routes import workflows, agents
@@ -17,9 +18,12 @@ app = FastAPI(title="Jules Agent Orchestrator (JAO)", version="0.1.0", lifespan=
 
 # Security: Restrict origins in production
 # For now, we restrict to the known frontend port
+allowed_origins_env = os.environ.get("ALLOWED_ORIGINS", "http://localhost:3005")
+allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3005"],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
