@@ -27,9 +27,11 @@ class OrchestratorEngine:
 
         # Fallback to local clone path if running locally against the repo it's sitting in
         if os.path.exists(file_path):
-            try:
+            def _read_sync():
                 with open(file_path, "r", encoding="utf-8") as f:
                     return f.read()
+            try:
+                return await asyncio.to_thread(_read_sync)
             except Exception as e:
                 logger.exception("Failed to read local file %s: %s", file_path, e)
                 return None
