@@ -112,6 +112,54 @@ class OrchestratorEngine:
         # If all tasks are completed or no agent is assigned
         return None
 
+
+    @staticmethod
+    async def check_and_read_blackboard(github_repo_id: str):
+        """
+        Fetches the board content once and determines both if the repo is initialized
+        and the next uncompleted task on the blackboard.
+        Returns a tuple: (is_initialized, next_step_dict)
+        """
+        board_content = await OrchestratorEngine.fetch_remote_file(github_repo_id, ".jao/task_board.md")
+
+        if not board_content:
+            return False, None
+
+        lines = board_content.splitlines()
+
+        for line in lines:
+            if "- [ ]" in line:
+                assignment_match = re.search(r'@([a-z_]+)', line, re.IGNORECASE)
+                if assignment_match:
+                    tag = assignment_match.group(1).lower()
+
+                    agent_map = {
+                        "pydan": "py_dan_backend",
+                        "rita": "react_rita_frontend",
+                        "oliver": "ops_oliver_devops",
+                        "tina": "test_tina_qa",
+                        "ada": "ada_architect",
+                        "vera": "vera_verifier",
+                        "priya": "priya_promptcraft",
+                        "omega": "omega_system_auditor",
+                        "syncer": "syncer_master",
+                        "onboard": "syncer_onboard"
+                    }
+                    mapped_agent = agent_map.get(tag, tag)
+
+                    try:
+                        task_desc = line.split("- [ ]")[1].split("(Assigned")[0].strip()
+                    except IndexError:
+                        task_desc = line.split("- [ ]")[1].strip()
+
+                    return True, {
+                        "next_agent": mapped_agent,
+                        "prompt": f"Task from board: {task_desc}\n\nRead your specific workspace folder in '.jao/workspace/' for detailed handovers, blueprints, or test reports from the previous agent. Update the task board when done.",
+                        "mode": "Start"
+                    }
+
+        return True, None
+
     @staticmethod
     async def get_context_injection(github_repo_id: str) -> str:
         """

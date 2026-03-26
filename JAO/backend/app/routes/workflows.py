@@ -22,15 +22,12 @@ async def run_workflow(request: RunWorkflowRequest):
     """Starts a new autonomous workflow chain entirely driven by the filesystem."""
     run_id = str(uuid.uuid4())
     
-    # Check if the repo is initialized with the .jao folder.
-    # If not, override the starting agent to @onboard to bootstrap it.
-    is_init = await OrchestratorEngine.is_repo_initialized(request.github_repo_id)
+    # Check if the repo is initialized and read the blackboard in one fetch
+    is_init, next_step = await OrchestratorEngine.check_and_read_blackboard(request.github_repo_id)
     if not is_init:
         starting_agent = "syncer_onboard"
         task = "Initialize .jao directory, task board, and project map."
     else:
-        # Fall back to reading the blackboard if no agent is specified
-        next_step = await OrchestratorEngine.read_blackboard_state(request.github_repo_id)
         if next_step:
             starting_agent = next_step["next_agent"]
             task = next_step["prompt"]
