@@ -2,6 +2,10 @@ import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
 import uuid
 
+import asyncpg
+if getattr(asyncpg, 'Record', None) is None or not isinstance(asyncpg.Record, type):
+    asyncpg.Record = type('Record', (dict,), {})
+
 # Define a mock class for RunWorkflowRequest since the mocked Pydantic in conftest
 # breaks the default constructor.
 class MockRunWorkflowRequest:
@@ -21,20 +25,20 @@ class MockWorkflowResponse:
 def async_test(f):
     def wrapper(*args, **kwargs):
         import asyncio
-        loop = asyncio.get_event_loop()
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
         return loop.run_until_complete(f(*args, **kwargs))
     return wrapper
 
 @patch("app.routes.workflows.WorkflowResponse", MockWorkflowResponse)
 @patch("app.models.api.WorkflowResponse", MockWorkflowResponse)
 @patch("app.routes.workflows.get_db_pool")
-@patch("app.routes.workflows.OrchestratorEngine.is_repo_initialized", new_callable=AsyncMock)
-@patch("app.routes.workflows.OrchestratorEngine.read_blackboard_state", new_callable=AsyncMock)
+@patch("app.routes.workflows.OrchestratorEngine.check_and_read_blackboard", new_callable=AsyncMock)
 @patch("app.routes.workflows._run_engine_loop")
 @patch("app.routes.workflows.asyncio.create_task")
 @async_test
-async def test_run_workflow_not_initialized(mock_create_task, mock_run_loop, mock_read_blackboard, mock_is_repo_init, mock_get_db_pool):
-    mock_is_repo_init.return_value = False
+async def test_run_workflow_not_initialized(mock_create_task, mock_run_loop, mock_check_and_read_blackboard, mock_get_db_pool):
+    mock_check_and_read_blackboard.return_value = (False, None)
 
     # Setup mock db pool
     mock_conn = AsyncMock()
@@ -51,8 +55,7 @@ async def test_run_workflow_not_initialized(mock_create_task, mock_run_loop, moc
     assert response.status == "RUNNING"
     assert "syncer_onboard" in response.message
 
-    mock_is_repo_init.assert_called_once_with("repo123")
-    mock_read_blackboard.assert_not_called()
+    mock_check_and_read_blackboard.assert_called_once_with("repo123")
 
     # Assert DB call
     mock_conn.execute.assert_called_once()
@@ -68,14 +71,12 @@ async def test_run_workflow_not_initialized(mock_create_task, mock_run_loop, moc
 @patch("app.routes.workflows.WorkflowResponse", MockWorkflowResponse)
 @patch("app.models.api.WorkflowResponse", MockWorkflowResponse)
 @patch("app.routes.workflows.get_db_pool")
-@patch("app.routes.workflows.OrchestratorEngine.is_repo_initialized", new_callable=AsyncMock)
-@patch("app.routes.workflows.OrchestratorEngine.read_blackboard_state", new_callable=AsyncMock)
+@patch("app.routes.workflows.OrchestratorEngine.check_and_read_blackboard", new_callable=AsyncMock)
 @patch("app.routes.workflows._run_engine_loop")
 @patch("app.routes.workflows.asyncio.create_task")
 @async_test
-async def test_run_workflow_initialized_with_task(mock_create_task, mock_run_loop, mock_read_blackboard, mock_is_repo_init, mock_get_db_pool):
-    mock_is_repo_init.return_value = True
-    mock_read_blackboard.return_value = {"next_agent": "priya_promptcraft", "prompt": "Test prompt", "mode": "Autonomous"}
+async def test_run_workflow_initialized_with_task(mock_create_task, mock_run_loop, mock_check_and_read_blackboard, mock_get_db_pool):
+    mock_check_and_read_blackboard.return_value = (True, {"next_agent": "priya_promptcraft", "prompt": "Test prompt", "mode": "Autonomous"})
 
     # Setup mock db pool
     mock_conn = AsyncMock()
@@ -91,8 +92,7 @@ async def test_run_workflow_initialized_with_task(mock_create_task, mock_run_loo
     assert response.status == "RUNNING"
     assert "priya_promptcraft" in response.message
 
-    mock_is_repo_init.assert_called_once_with("repo123")
-    mock_read_blackboard.assert_called_once_with("repo123")
+    mock_check_and_read_blackboard.assert_called_once_with("repo123")
 
     # Assert DB call
     mock_conn.execute.assert_called_once()
@@ -106,14 +106,12 @@ async def test_run_workflow_initialized_with_task(mock_create_task, mock_run_loo
 @patch("app.routes.workflows.WorkflowResponse", MockWorkflowResponse)
 @patch("app.models.api.WorkflowResponse", MockWorkflowResponse)
 @patch("app.routes.workflows.get_db_pool")
-@patch("app.routes.workflows.OrchestratorEngine.is_repo_initialized", new_callable=AsyncMock)
-@patch("app.routes.workflows.OrchestratorEngine.read_blackboard_state", new_callable=AsyncMock)
+@patch("app.routes.workflows.OrchestratorEngine.check_and_read_blackboard", new_callable=AsyncMock)
 @patch("app.routes.workflows._run_engine_loop")
 @patch("app.routes.workflows.asyncio.create_task")
 @async_test
-async def test_run_workflow_initialized_no_task(mock_create_task, mock_run_loop, mock_read_blackboard, mock_is_repo_init, mock_get_db_pool):
-    mock_is_repo_init.return_value = True
-    mock_read_blackboard.return_value = None
+async def test_run_workflow_initialized_no_task(mock_create_task, mock_run_loop, mock_check_and_read_blackboard, mock_get_db_pool):
+    mock_check_and_read_blackboard.return_value = (True, None)
 
     request = MockRunWorkflowRequest(task="dummy", starting_agent="dummy", github_repo_id="repo123")
 
@@ -124,7 +122,88 @@ async def test_run_workflow_initialized_no_task(mock_create_task, mock_run_loop,
     assert "error" in response
     assert response["error"] == "No uncompleted tasks assigned on the blackboard."
 
-    mock_is_repo_init.assert_called_once_with("repo123")
-    mock_read_blackboard.assert_called_once_with("repo123")
+    mock_check_and_read_blackboard.assert_called_once_with("repo123")
     mock_get_db_pool.assert_not_called()
     mock_create_task.assert_not_called()
+
+@patch("app.routes.workflows.get_db_pool")
+@async_test
+async def test_get_workflow_status_success(mock_get_db_pool):
+    # Setup mock db pool
+    mock_conn = AsyncMock()
+    mock_pool = MagicMock()
+    mock_pool.acquire.return_value.__aenter__.return_value = mock_conn
+    mock_get_db_pool.return_value = mock_pool
+
+    mock_conn.fetchrow.return_value = {
+        "status": "RUNNING",
+        "current_agent": "priya_promptcraft",
+        "task": "Test task",
+        "history": [{"agent": "syncer_onboard", "status": "COMPLETED_AND_CLEARED"}]
+    }
+
+    run_id = str(uuid.uuid4())
+    from app.routes.workflows import get_workflow_status
+    response = await get_workflow_status(run_id)
+
+    assert response["status"] == "RUNNING"
+    assert response["current_agent"] == "priya_promptcraft"
+    assert response["task"] == "Test task"
+    assert len(response["history"]) == 1
+
+    mock_get_db_pool.assert_called_once()
+    mock_conn.fetchrow.assert_called_once()
+    args, _ = mock_conn.fetchrow.call_args
+    assert "SELECT status, current_agent, task, history" in args[0]
+    assert args[1] == run_id
+
+@patch("app.routes.workflows.get_db_pool")
+@async_test
+async def test_get_workflow_status_not_found(mock_get_db_pool):
+    # Setup mock db pool
+    mock_conn = AsyncMock()
+    mock_pool = MagicMock()
+    mock_pool.acquire.return_value.__aenter__.return_value = mock_conn
+    mock_get_db_pool.return_value = mock_pool
+
+    mock_conn.fetchrow.return_value = None
+
+    run_id = str(uuid.uuid4())
+    from app.routes.workflows import get_workflow_status
+    response = await get_workflow_status(run_id)
+
+    assert response == {"error": "Not found"}
+
+    mock_get_db_pool.assert_called_once()
+    mock_conn.fetchrow.assert_called_once()
+
+
+@patch("app.routes.workflows.get_db_pool")
+@async_test
+async def test_get_workflow_status_json_history(mock_get_db_pool):
+    # Setup mock db pool
+    mock_conn = AsyncMock()
+    mock_pool = MagicMock()
+    mock_pool.acquire.return_value.__aenter__.return_value = mock_conn
+    mock_get_db_pool.return_value = mock_pool
+
+    import json
+    # Mocking stringified history case
+    mock_conn.fetchrow.return_value = {
+        "status": "COMPLETED",
+        "current_agent": None,
+        "task": "Test task",
+        "history": json.dumps([{"agent": "priya_promptcraft", "status": "COMPLETED_AND_CLEARED"}])
+    }
+
+    run_id = str(uuid.uuid4())
+    from app.routes.workflows import get_workflow_status
+    response = await get_workflow_status(run_id)
+
+    assert response["status"] == "COMPLETED"
+    assert response["current_agent"] is None
+    assert type(response["history"]) is list
+    assert response["history"][0]["agent"] == "priya_promptcraft"
+
+    mock_get_db_pool.assert_called_once()
+    mock_conn.fetchrow.assert_called_once()
