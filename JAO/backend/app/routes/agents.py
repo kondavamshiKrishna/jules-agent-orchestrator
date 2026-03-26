@@ -17,7 +17,9 @@ def _load_personas_from_dir(
 ) -> List[AgentPersona]:
     """Helper to load AgentPersonas from markdown files in a given directory."""
     if exclude_files is None:
-        exclude_files = []
+        exclude_files = set()
+    else:
+        exclude_files = set(exclude_files)
 
     personas = []
     file_paths = glob.glob(os.path.join(directory, "*.md"))
