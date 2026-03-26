@@ -107,11 +107,15 @@ class OrchestratorEngine:
         """
         context = "=== JAO REPOSITORY STATE ===\n"
 
-        map_content = await OrchestratorEngine.fetch_remote_file(github_repo_id, ".jao/project_map.md")
+        # Concurrent fetch for optimization
+        map_task = OrchestratorEngine.fetch_remote_file(github_repo_id, ".jao/project_map.md")
+        board_task = OrchestratorEngine.fetch_remote_file(github_repo_id, ".jao/task_board.md")
+
+        map_content, board_content = await asyncio.gather(map_task, board_task)
+
         if map_content:
             context += f"\n-- Project Map --\n{map_content}\n"
 
-        board_content = await OrchestratorEngine.fetch_remote_file(github_repo_id, ".jao/task_board.md")
         if board_content:
             context += f"\n-- Task Board --\n{board_content}\n"
 
