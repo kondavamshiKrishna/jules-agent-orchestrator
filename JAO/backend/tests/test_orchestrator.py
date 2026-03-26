@@ -79,11 +79,16 @@ def test_parse_handover_none():
 class TestOrchestratorEngineV2:
     @async_test
     async def test_fetch_remote_file_error_path(self):
-        """Verify that an exception during local file read returns None."""
+        """Verify that an exception during local file read logs the error and returns None."""
         with patch("os.path.exists", return_value=True):
-            with patch("builtins.open", side_effect=Exception("Disk Error")):
-                result = await OrchestratorEngine.fetch_remote_file("test-repo", ".jao/task_board.md")
-                assert result is None
+            error = Exception("Disk Error")
+            with patch("builtins.open", side_effect=error):
+                with patch("app.services.orchestrator.logger") as mock_logger:
+                    result = await OrchestratorEngine.fetch_remote_file("test-repo", ".jao/task_board.md")
+                    assert result is None
+                    mock_logger.exception.assert_called_once_with(
+                        "Failed to read local file %s: %s", ".jao/task_board.md", error
+                    )
 
     @async_test
     async def test_fetch_remote_file_success(self):
