@@ -1,3 +1,6 @@
+import asyncio
+from unittest.mock import patch
+import os
 import unittest
 from app.services.orchestrator import OrchestratorEngine
 
@@ -62,7 +65,22 @@ class TestOrchestrator(unittest.TestCase):
         self.assertEqual(result["next_agent"], "priya_promptcraft")
         self.assertEqual(result["prompt"], "do something.")
 
+
+    def test_fetch_remote_file_error_path(self):
+        test_exception = Exception("Disk Error")
+        with patch("os.path.exists", return_value=True):
+            with patch("builtins.open", side_effect=test_exception):
+                with patch("app.services.orchestrator.logger.exception") as mock_logger:
+                    # Resolve path traversal check
+                    base_dir = os.path.abspath(os.getcwd())
+                    file_path = os.path.join(base_dir, ".jao/task_board.md")
+
+                    result = asyncio.run(OrchestratorEngine.fetch_remote_file("test-repo", file_path))
+                    self.assertIsNone(result)
+                    mock_logger.assert_called_once_with("Failed to read local file %s: %s", file_path, test_exception)
+
     def test_parse_handover_mapping(self):
+
         tags = ["pydan", "rita", "oliver", "tina", "ada", "vera"]
         expected_agents = ["py_dan_backend", "react_rita_frontend", "ops_oliver_devops", "test_tina_qa", "ada_architect", "vera_verifier"]
 
