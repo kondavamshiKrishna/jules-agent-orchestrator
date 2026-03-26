@@ -1,9 +1,12 @@
 import asyncio
 import asyncpg
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 async def init_db():
-    print("Initializing database schema...")
+    logger.info("Initializing database schema...")
     # Real app would use env vars for DSN
     conn = await asyncpg.connect("postgresql://jao_user:jao_pass@timescale:5432/jao")
 
@@ -35,11 +38,12 @@ async def init_db():
             FOR EACH ROW
             EXECUTE FUNCTION update_modified_column();
         """)
-        print("Database schema initialized successfully.")
+        logger.info("Database schema initialized successfully.")
     except Exception as e:
-        print(f"Failed to initialize schema: {e}")
+        logger.exception("Failed to initialize schema: %s", e)
     finally:
         await conn.close()
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     asyncio.run(init_db())
