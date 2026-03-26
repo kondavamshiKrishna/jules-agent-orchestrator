@@ -19,6 +19,7 @@ app = FastAPI(title="Jules Agent Orchestrator (JAO)", version="0.1.0", lifespan=
 # Security: Restrict origins in production
 # For now, we restrict to the known frontend port
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "http://localhost:3005")
+# Use environment variable to avoid hardcoded origins
 allowed_origins = [origin.strip() for origin in allowed_origins_env.split(",") if origin.strip()]
 
 app.add_middleware(
