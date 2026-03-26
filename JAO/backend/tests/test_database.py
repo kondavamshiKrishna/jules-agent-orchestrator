@@ -77,3 +77,14 @@ def test_json_safe_nested():
         "record": {"nested_uuid": str(u)},
         "dict": {"dt": "2024-01-01T12:00:00"}
     }
+
+def test_json_safe_tuple_and_set():
+    assert db.json_safe((1, "two", 3.0)) == [1, "two", 3.0]
+
+    # order is not guaranteed for sets
+    safe_set = db.json_safe({"a", "b", "c"})
+    assert isinstance(safe_set, list)
+    assert set(safe_set) == {"a", "b", "c"}
+
+    assert db.json_safe(set()) == []
+    assert db.json_safe(tuple()) == []
