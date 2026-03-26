@@ -9,7 +9,17 @@ class MockPydantic:
 
 sys.modules['pydantic'] = MockPydantic()
 sys.modules['asyncpg'] = MagicMock()
-sys.modules['jules_agent_sdk'] = MagicMock()
+class MockException(Exception): pass
+class MockExceptions:
+    JulesAPIError = MockException
+    JulesAuthenticationError = MockException
+
+class MockJulesAgentSDK:
+    exceptions = MockExceptions()
+
+sys.modules['jules_agent_sdk'] = MockJulesAgentSDK()
+sys.modules['jules_agent_sdk.exceptions'] = MockExceptions()
+
 
 class MockResponse:
     def __init__(self, status_code, headers, url=None):
