@@ -35,7 +35,7 @@ class JulesService:
             self.client.sources.list()
             return True
         except JulesAPIError as e:
-            logger.exception("Connection test failed: %s", e)
+            logger.exception("Connection test failed during API source list: %s", e)
             return False
 
     async def create_session(self, prompt: str, source: str, title: str, require_plan_approval: bool):
