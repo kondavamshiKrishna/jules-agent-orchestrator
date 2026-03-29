@@ -27,17 +27,6 @@ class JulesService:
             logger.exception("Failed to instantiate SDK: %s", e)
             self.client = None
             
-    def test_connection(self):
-        """Attempts to list sources to verify the key works"""
-        if not self.client:
-            return False
-        try:
-            self.client.sources.list()
-            return True
-        except JulesAPIError as e:
-            logger.exception("Connection test failed during API source list: %s", e)
-            return False
-
     async def create_session(self, prompt: str, source: str, title: str, require_plan_approval: bool):
         """Creates a session in jules"""
         if not self.client:
