@@ -18,6 +18,8 @@ AGENT_MAP = {
     "onboard": "syncer_onboard"
 }
 
+ASSIGNMENT_PATTERN = re.compile(r'@([a-z_]+)', re.IGNORECASE)
+
 
 class OrchestratorEngine:
     """
@@ -87,12 +89,11 @@ class OrchestratorEngine:
 
         lines = board_content.splitlines()
 
-        assignment_pattern = re.compile(r'@([a-z_]+)', re.IGNORECASE)
         for line in lines:
             # Find the first uncompleted task
             if "- [ ]" in line:
                 # Look for an assignment tag (e.g., '@pydan')
-                assignment_match = assignment_pattern.search(line)
+                assignment_match = ASSIGNMENT_PATTERN.search(line)
                 if assignment_match:
                     tag = assignment_match.group(1).lower()
 
@@ -130,23 +131,10 @@ class OrchestratorEngine:
 
         for line in lines:
             if "- [ ]" in line:
-                assignment_match = re.search(r'@([a-z_]+)', line, re.IGNORECASE)
+                assignment_match = ASSIGNMENT_PATTERN.search(line)
                 if assignment_match:
                     tag = assignment_match.group(1).lower()
-
-                    agent_map = {
-                        "pydan": "py_dan_backend",
-                        "rita": "react_rita_frontend",
-                        "oliver": "ops_oliver_devops",
-                        "tina": "test_tina_qa",
-                        "ada": "ada_architect",
-                        "vera": "vera_verifier",
-                        "priya": "priya_promptcraft",
-                        "omega": "omega_system_auditor",
-                        "syncer": "syncer_master",
-                        "onboard": "syncer_onboard"
-                    }
-                    mapped_agent = agent_map.get(tag, tag)
+                    mapped_agent = AGENT_MAP.get(tag, tag)
 
                     try:
                         task_desc = line.split("- [ ]")[1].split("(Assigned")[0].strip()
