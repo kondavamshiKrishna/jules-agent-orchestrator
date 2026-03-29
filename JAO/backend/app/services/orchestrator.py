@@ -46,11 +46,12 @@ class OrchestratorEngine:
         abs_path = os.path.abspath(file_path)
 
         try:
+            safe_path = os.path.relpath(abs_path, base_dir)
             if os.path.commonpath([base_dir, abs_path]) != base_dir:
-                logger.warning("Attempted path traversal detected: %s", file_path)
+                logger.warning("Attempted path traversal detected: %s", safe_path)
                 return None
         except ValueError as e:
-            logger.exception("Invalid path provided for fetching remote file: %s", e)
+            logger.error("Invalid path provided for fetching remote file: %s", type(e).__name__)
             return None
 
         # Fallback to local clone path if running locally against the repo it's sitting in
@@ -59,7 +60,12 @@ class OrchestratorEngine:
                 with open(abs_path, "r", encoding="utf-8") as f:
                     return f.read()
             except Exception as e:
-                logger.exception("Failed to read local file %s: %s", file_path, e)
+                # Re-calculate safe_path if it fails above but exists locally (though unlikely)
+                try:
+                    safe_path = os.path.relpath(abs_path, base_dir)
+                except ValueError:
+                    safe_path = "local-file"
+                logger.error("Failed to read local file %s: %s", safe_path, type(e).__name__)
                 return None
         return None
 
