@@ -83,10 +83,10 @@ class TestOrchestratorEngineV2:
         test_exception = Exception("Disk Error")
         with patch("os.path.exists", return_value=True):
             with patch("builtins.open", side_effect=test_exception):
-                with patch("app.services.orchestrator.logger.exception") as mock_logger:
+                with patch("app.services.orchestrator.logger.error") as mock_logger:
                     result = await OrchestratorEngine.fetch_remote_file("test-repo", ".jao/task_board.md")
                     assert result is None
-                    mock_logger.assert_called_once_with("Failed to read local file %s: %s", ".jao/task_board.md", test_exception)
+                    mock_logger.assert_called_once_with("Failed to read local file %s: %s", ".jao/task_board.md", "Exception")
 
     @async_test
     async def test_fetch_remote_file_success(self):
