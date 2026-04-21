@@ -2,6 +2,7 @@ import re
 import os
 import logging
 import asyncio
+from collections import OrderedDict
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +21,10 @@ AGENT_MAP = {
 
 ASSIGNMENT_PATTERN = re.compile(r'@([a-z_]+)', re.IGNORECASE)
 
+# Simple in-memory LRU cache for remote files
+FILE_CACHE = OrderedDict()
+MAX_CACHE_SIZE = 100
+
 
 class OrchestratorEngine:
     """
@@ -37,6 +42,11 @@ class OrchestratorEngine:
         we simulate checking if the file exists locally (if we are working on a local clone)
         or return None if it doesn't exist remotely.
         """
+        cache_key = (github_repo_id, file_path)
+        if cache_key in FILE_CACHE:
+            FILE_CACHE.move_to_end(cache_key)
+            return FILE_CACHE[cache_key]
+
         # In a fully productionized cloud environment, this would call:
         # client = get_jules_client()
         # return await client.repo.read_file(github_repo_id, file_path)
@@ -54,13 +64,14 @@ class OrchestratorEngine:
             logger.error("Invalid path provided for fetching remote file: %s", type(e).__name__)
             return None
 
+        content = None
         # Fallback to local clone path if running locally against the repo it's sitting in
         if os.path.exists(abs_path):
             try:
                 def _read_file():
                     with open(abs_path, "r", encoding="utf-8") as f:
                         return f.read()
-                return await asyncio.to_thread(_read_file)
+                content = await asyncio.to_thread(_read_file)
             except Exception as e:
                 # Re-calculate safe_path if it fails above but exists locally (though unlikely)
                 try:
@@ -69,7 +80,13 @@ class OrchestratorEngine:
                     safe_path = "local-file"
                 logger.error("Failed to read local file %s: %s", safe_path, type(e).__name__)
                 return None
-        return None
+
+        if content is not None:
+            FILE_CACHE[cache_key] = content
+            if len(FILE_CACHE) > MAX_CACHE_SIZE:
+                FILE_CACHE.popitem(last=False)
+
+        return content
 
     @staticmethod
     async def is_repo_initialized(github_repo_id: str) -> bool:
