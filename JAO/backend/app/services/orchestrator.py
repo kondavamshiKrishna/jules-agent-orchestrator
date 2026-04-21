@@ -37,10 +37,6 @@ class OrchestratorEngine:
         we simulate checking if the file exists locally (if we are working on a local clone)
         or return None if it doesn't exist remotely.
         """
-        # In a fully productionized cloud environment, this would call:
-        # client = get_jules_client()
-        # return await client.repo.read_file(github_repo_id, file_path)
-
         # Prevent Path Traversal Vulnerability
         base_dir = os.path.realpath(os.getcwd())
         abs_path = os.path.realpath(file_path)
