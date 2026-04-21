@@ -88,13 +88,5 @@ sys.modules['fastapi'] = MockFastapi()
 sys.modules['fastapi.middleware'] = MagicMock()
 sys.modules['fastapi.middleware.cors'] = MagicMock()
 
-# Instead of MockContextlib, we can just use unittest.mock.MagicMock or a simple decorator class
-def mock_asynccontextmanager(f=None):
-    if f is None:
-        def wrapper(func):
-            return func
-        return wrapper
-    return f
-
 import contextlib
-sys.modules['contextlib'].asynccontextmanager = mock_asynccontextmanager
+contextlib.asynccontextmanager = lambda f: f
