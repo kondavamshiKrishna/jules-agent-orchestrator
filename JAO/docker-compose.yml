@@ -11,15 +11,16 @@ services:
       - ../:/jewels_agents:ro
     environment:
       - JULES_API_KEY=${JULES_API_KEY}
+      - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@timescale:5432/${POSTGRES_DB}
     restart: unless-stopped
 
   timescale:
     image: timescale/timescaledb:latest-pg14
     container_name: jao-timescale
     environment:
-      - POSTGRES_DB=jao
-      - POSTGRES_PASSWORD=jao_pass
-      - POSTGRES_USER=jao_user
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_USER=${POSTGRES_USER}
     ports:
       - "5432:5432"
     volumes:
