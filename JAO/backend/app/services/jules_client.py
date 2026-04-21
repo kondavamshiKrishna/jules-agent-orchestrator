@@ -74,5 +74,8 @@ active_jules_client = None
 def get_jules_client():
     global active_jules_client
     if not active_jules_client:
-        active_jules_client = JulesService(api_key=os.getenv("JULES_API_KEY", "dummy"))
+        api_key = os.environ.get("JULES_API_KEY")
+        if not api_key:
+            raise ValueError("JULES_API_KEY environment variable is not set.")
+        active_jules_client = JulesService(api_key=api_key)
     return active_jules_client
