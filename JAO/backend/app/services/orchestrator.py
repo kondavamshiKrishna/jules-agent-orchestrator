@@ -20,6 +20,10 @@ AGENT_MAP = {
 
 ASSIGNMENT_PATTERN = re.compile(r'@([a-z_]+)', re.IGNORECASE)
 
+# The base directory of the server is static during runtime.
+# Pre-calculating this once at the module level avoids redundant synchronous filesystem stat calls.
+BASE_DIR = os.path.realpath(os.getcwd())
+
 
 class OrchestratorEngine:
     """
@@ -42,12 +46,11 @@ class OrchestratorEngine:
         # return await client.repo.read_file(github_repo_id, file_path)
 
         # Prevent Path Traversal Vulnerability
-        base_dir = os.path.realpath(os.getcwd())
         abs_path = os.path.realpath(file_path)
 
         try:
-            safe_path = os.path.relpath(abs_path, base_dir)
-            if os.path.commonpath([base_dir, abs_path]) != base_dir:
+            safe_path = os.path.relpath(abs_path, BASE_DIR)
+            if os.path.commonpath([BASE_DIR, abs_path]) != BASE_DIR:
                 logger.warning("Attempted path traversal detected: %s", safe_path)
                 return None
         except ValueError as e:
@@ -64,7 +67,7 @@ class OrchestratorEngine:
             except Exception as e:
                 # Re-calculate safe_path if it fails above but exists locally (though unlikely)
                 try:
-                    safe_path = os.path.relpath(abs_path, base_dir)
+                    safe_path = os.path.relpath(abs_path, BASE_DIR)
                 except ValueError:
                     safe_path = "local-file"
                 logger.error("Failed to read local file %s: %s", safe_path, type(e).__name__)
