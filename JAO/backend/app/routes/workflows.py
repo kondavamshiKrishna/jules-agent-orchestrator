@@ -95,8 +95,8 @@ async def _run_engine_loop(run_id: str, start_agent: str, start_task: str, reque
     while current_agent:
         async with pool.acquire() as conn:
             await conn.execute(
-                "UPDATE workflow_runs SET status = $1, current_agent = $2 WHERE run_id = $3::uuid",
-                f"AGENT_ACTIVE: {current_agent}", current_agent, run_id
+                "UPDATE workflow_runs SET status = 'AGENT_ACTIVE: ' || $1, current_agent = $1 WHERE run_id = $2::uuid",
+                current_agent, run_id
             )
         
         # 1. Load the persona from the .md file securely
@@ -137,8 +137,8 @@ async def _run_engine_loop(run_id: str, start_agent: str, start_task: str, reque
         if not session_id or "error" in session:
             async with pool.acquire() as conn:
                 await conn.execute(
-                    "UPDATE workflow_runs SET status = $1 WHERE run_id = $2::uuid",
-                    f"ERROR: {session.get('error', 'Failed to create session')}", run_id
+                    "UPDATE workflow_runs SET status = 'ERROR: ' || $1 WHERE run_id = $2::uuid",
+                    session.get('error', 'Failed to create session'), run_id
                 )
             break
             
