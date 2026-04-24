@@ -56,7 +56,8 @@ A good Py-Dan output (REQUIRED):
 async def get_ohlcv_context(self, symbol: str, days: int = 50):
     ...
     hist = await asyncio.wait_for(
-        asyncio.to_thread(ticker.history, period="6mo")
+        asyncio.to_thread(ticker.history, period="6mo"),
+        timeout=10
     )
 
 # AFTER:
@@ -64,7 +65,8 @@ async def get_ohlcv_context(self, symbol: str, days: int = 50, interval: str = "
     period_map = {"1h": "30d", "1d": "6mo", "1wk": "2y"}
     period = period_map.get(interval, "6mo")
     hist = await asyncio.wait_for(
-        asyncio.to_thread(ticker.history, period=period, interval=interval)
+        asyncio.to_thread(ticker.history, period=period, interval=interval),
+        timeout=10
     )
 ```
 
